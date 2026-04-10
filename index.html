@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Storyboard — Multiplication of Integers</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap');
+  :root {
+    --ink:#1a1a1a; --muted:#5a5a5a; --rule:#e0ddd8; --page-bg:#faf9f7; --card-bg:#ffffff;
+    --g-bg:#edf6e5; --g-bd:#5a9e3a; --g-tx:#2d5c1a;
+    --c-bg:#fdf0ec; --c-bd:#d4572e; --c-tx:#7a2c10;
+    --p-bg:#f0eefc; --p-bd:#6b5fc0; --p-tx:#3a2d80;
+    --a-bg:#fef8eb; --a-bd:#c98a10; --a-tx:#5c3d00;
+    --b-bg:#eaf3fc; --b-bd:#2d7ec9; --b-tx:#0c3d6e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--page-bg);color:var(--ink);font-size:14px;line-height:1.65;}
+  .cover{background:#1c2b1a;color:#f0f5ed;padding:56px 64px 52px;position:relative;overflow:hidden;}
+  .cover::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent,transparent 40px,rgba(255,255,255,0.025) 40px,rgba(255,255,255,0.025) 41px);}
+  .cover-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8fc476;margin-bottom:16px;position:relative;}
+  .cover h1{font-family:'DM Serif Display',serif;font-size:38px;line-height:1.15;margin-bottom:8px;position:relative;color:#fff;}
+  .cover-sub{font-size:16px;color:#b8cdb2;margin-bottom:32px;position:relative;}
+  .cover-meta{display:flex;gap:32px;flex-wrap:wrap;position:relative;}
+  .meta-item{font-size:12px;color:#8aad82;}
+  .meta-item strong{display:block;color:#d2e8cd;font-size:13px;}
+  .container{max-width:960px;margin:0 auto;padding:48px 40px;}
+  .screen{margin-bottom:64px;border:1px solid var(--rule);border-radius:12px;overflow:hidden;background:var(--card-bg);box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+  .screen-header{background:#1c2b1a;color:#fff;padding:18px 28px;display:flex;align-items:center;gap:16px;}
+  .screen-num{background:#8fc476;color:#1c2b1a;font-weight:700;font-size:12px;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .screen-title{font-family:'DM Serif Display',serif;font-size:20px;}
+  .screen-stage{margin-left:auto;font-size:11px;background:rgba(255,255,255,0.12);padding:4px 12px;border-radius:20px;white-space:nowrap;color:#d2e8cd;}
+  .screen-body{padding:28px;display:grid;gap:0;}
+  .section{padding:20px 0;border-bottom:1px solid var(--rule);}
+  .section:last-child{border-bottom:none;}
+  .section-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+  .overview-box{background:var(--g-bg);border-left:3px solid var(--g-bd);padding:12px 16px;border-radius:0 6px 6px 0;}
+  .goal-tag{display:inline-block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--g-tx);background:#c4e0b2;padding:2px 8px;border-radius:3px;margin-bottom:6px;}
+  .overview-box p{color:var(--g-tx);font-size:13.5px;}
+  .visual-desc{font-size:13.5px;color:#333;line-height:1.75;}
+  .vis-item{display:flex;gap:10px;margin-bottom:6px;}
+  .vis-dot{width:6px;height:6px;border-radius:50%;background:var(--g-bd);margin-top:7px;flex-shrink:0;}
+  .script-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .script-table th{background:var(--p-bg);color:var(--p-tx);text-align:left;padding:9px 14px;font-size:11px;letter-spacing:0.5px;font-weight:600;border:1px solid #d4d0f0;}
+  .script-table td{padding:10px 14px;border:1px solid var(--rule);vertical-align:top;line-height:1.6;color:#2a2a2a;}
+  .script-table tr:nth-child(even) td{background:#faf9f7;}
+  .ost{font-weight:500;color:#1a1a1a;}
+  .vo{font-style:italic;color:#444;}
+  .vo-en{color:#888;font-size:12px;display:block;margin-top:3px;}
+  .interaction-list{list-style:none;}
+  .interaction-list li{display:flex;gap:12px;margin-bottom:10px;font-size:13.5px;align-items:flex-start;}
+  .step-badge{background:var(--b-bg);border:1px solid var(--b-bd);color:var(--b-tx);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;margin-top:2px;flex-shrink:0;}
+  .sys-badge{background:#f5f5f5;border:1px solid #d0d0d0;color:#444;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;margin-top:2px;flex-shrink:0;}
+  .feedback-grid{display:grid;gap:10px;}
+  .feedback-row{display:grid;grid-template-columns:145px 1fr;gap:12px;font-size:13px;align-items:start;}
+  .attempt-tag{font-size:11px;font-weight:600;padding:5px 10px;border-radius:4px;text-align:center;line-height:1.3;}
+  .a1{background:var(--a-bg);color:var(--a-tx);border:1px solid var(--a-bd);}
+  .a2{background:var(--c-bg);color:var(--c-tx);border:1px solid var(--c-bd);}
+  .a3{background:#fde8e8;color:#7a1010;border:1px solid #d44;}
+  .ac{background:var(--g-bg);color:var(--g-tx);border:1px solid var(--g-bd);}
+  .an{background:var(--p-bg);color:var(--p-tx);border:1px solid var(--p-bd);}
+  .feedback-msg{color:#333;line-height:1.6;}
+  .feedback-msg em{color:#555;}
+  .feedback-msg .act{color:var(--b-tx);font-weight:500;}
+  .rule-chip{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;margin:0 2px;}
+  .chip-pos{background:var(--g-bg);color:var(--g-tx);border:1px solid var(--g-bd);}
+  .chip-neg{background:var(--c-bg);color:var(--c-tx);border:1px solid var(--c-bd);}
+  .divider{border:none;border-top:2px dashed var(--rule);margin:48px 0 0;}
+  .notes{margin-top:32px;padding:24px 28px;background:#fff;border:1px solid var(--rule);border-radius:10px;}
+  .notes-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13px;color:#333;line-height:1.7;margin-top:14px;}
+  @media print{body{font-size:12px;}.cover{padding:40px;}.screen{page-break-inside:avoid;margin-bottom:40px;}.container{padding:24px;}}
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-label">Digital Learning Unit &middot; Storyboard</div>
+  <h1>Multiplication of Integers<br>Sign Rules</h1>
+  <div class="cover-sub">Why is a negative times a negative a positive?</div>
+  <div class="cover-meta">
+    <div class="meta-item"><strong>Subject</strong> Mathematics</div>
+    <div class="meta-item"><strong>Class</strong> VII — NCERT, Chapter: Integers</div>
+    <div class="meta-item"><strong>Duration</strong> 8–12 minutes</div>
+    <div class="meta-item"><strong>Screens</strong> 8 screens</div>
+    <div class="meta-item"><strong>Approach</strong> Concrete → Pictorial → Abstract (CPA)</div>
+    <div class="meta-item"><strong>Language</strong> English + Hindi (bilingual scaffolding)</div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══ SCREEN 1 ═══ -->
+<div class="screen">
+  <div class="screen-header">
+    <div class="screen-num">1</div>
+    <div class="screen-title">The Hook — Rohan's Monthly Debt</div>
+    <div class="screen-stage">Concrete Stage</div>
+  </div>
+  <div class="screen-body">
+
+    <div class="section">
+      <div class="section-label">Page Overview</div>
+      <div class="overview-box">
+        <span class="goal-tag">Hook</span>
+        <p>Introduce the need for integer multiplication through a familiar real-life story — a monthly debt — before any formal symbol appears. The goal is to make students feel the problem before they solve it.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Visual Description</div>
+      <div class="visual-desc">
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Background:</strong> Soft off-white, clean. No clutter or decorative elements.</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Left side — Character:</strong> A cartoon boy named <em>Rohan</em>. Simple two-colour flat design. He holds an empty wallet (open, flat rectangle outline). His expression is mildly worried — a simple downward-curved mouth arc, eyebrows slightly raised. Label "Rohan" below in grey text.</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Right side — Three debt cards:</strong> Three identical rectangular cards placed side by side (horizontal). Each card is coral-red fill with a dark-red 1px border. Each shows "₹50" in bold white text (centre). A small tab below each card reads "Month 1," "Month 2," "Month 3" in grey. Cards are initially at full opacity (all visible).</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Top-right corner:</strong> A small pill badge — dark green text on light green background — reading "Real-life situation".</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Bottom centre:</strong> A running total counter (hidden initially, appears after first tap): "Total debt: ₹___" in large text. A "Continue →" button below it — disabled/greyed out until all 3 cards are tapped.</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Scripting</div>
+      <table class="script-table">
+        <tr><th style="width:46%">On-Screen Text (English)</th><th>Voiceover — Hindi + English</th></tr>
+        <tr>
+          <td class="ost">Rohan has to pay ₹50 every month.<br><br>How much does he owe after 3 months?</td>
+          <td class="vo">"Rohan ko har mahine ₹50 dena padta hai. Agar yeh 3 mahine tak chale, toh total kitna hua?"<span class="vo-en">(Rohan has to pay ₹50 every month. If this continues for 3 months, what is the total?)</span></td>
+        </tr>
+        <tr>
+          <td class="ost">Tap each month's card to count the debt.</td>
+          <td class="vo">"Har mahine ka card tap karo — dekhte hain kaise debt badh raha hai."<span class="vo-en">(Tap each month's card — let us see how the debt grows.)</span></td>
+        </tr>
+        <tr>
+          <td class="ost">Can we find the total in one calculation instead of adding again and again?</td>
+          <td class="vo">"Kya hum teen baar 50 jodne ki jagah ek hi step mein total nikaal sakte hain?"<span class="vo-en">(Can we find the total in one step instead of adding 50 three times?)</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Interaction Detail</div>
+      <ul class="interaction-list">
+        <li><div class="step-badge">Student</div>Taps the "Month 1" card.</li>
+        <li><div class="sys-badge">System</div>Card glows with a 2px amber border. Counter appears at bottom: "Total debt: ₹50".</li>
+        <li><div class="step-badge">Student</div>Taps "Month 2" card.</li>
+        <li><div class="sys-badge">System</div>Second card glows. Counter updates to "Total debt: ₹100".</li>
+        <li><div class="step-badge">Student</div>Taps "Month 3" card.</li>
+        <li><div class="sys-badge">System</div>Third card glows. Counter updates to "Total debt: ₹150". The "Continue →" button activates (turns green). A brief ✓ animation plays over the counter.</li>
+        <li><div class="step-badge">Student</div>Taps "Continue →" to proceed.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Feedback Logic</div>
+      <div class="feedback-grid">
+        <div class="feedback-row">
+          <div class="attempt-tag a1">If tapped out of order</div>
+          <div class="feedback-msg">Cards must be tapped in sequence (Month 1 → 2 → 3). An out-of-order tap causes a soft shake animation on that card and shows a tooltip: <em>"Start with Month 1 first."</em></div>
+        </div>
+        <div class="feedback-row">
+          <div class="attempt-tag ac">All 3 tapped correctly</div>
+          <div class="feedback-msg">Green tick (✓) on all three cards. "Continue →" button activates with a brief green pulse. No extra text — let the momentum carry forward.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ SCREEN 2 ═══ -->
+<div class="screen">
+  <div class="screen-header">
+    <div class="screen-num">2</div>
+    <div class="screen-title">Pattern Discovery — Products Going Down</div>
+    <div class="screen-stage">Concrete → Pictorial</div>
+  </div>
+  <div class="screen-body">
+
+    <div class="section">
+      <div class="section-label">Page Overview</div>
+      <div class="overview-box">
+        <span class="goal-tag">Concept Building</span>
+        <p>Build the first half of the pattern table. Students watch products decrease steadily as the multiplier drops from 3 to 0, then predict the next values for negative multipliers. This creates the "what comes next?" moment before negative multipliers are introduced formally.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Visual Description</div>
+      <div class="visual-desc">
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Title above table:</strong> "Let us look at a pattern." in bold purple text.</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Table — 4 columns:</strong> "Sr. No. | Expression | Product | Sign of Product". Table has a purple header row (light purple fill, dark purple text). Column widths: 60px | 180px | 120px | 140px.</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Rows 1–4</strong> (3×4=12, 2×4=8, 1×4=4, 0×4=0): Soft green fill (#edf6e5). Sign column: a small rounded pill badge — <span class="rule-chip chip-pos">+ Positive</span> for the first three, and a grey "zero" pill for row 4.</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Rows 5–7</strong> ((−1)×4, (−2)×4, (−3)×4): These rows are visible but greyed out (30% opacity) — locked. They will be revealed one by one as the student answers correctly.</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Right side of table:</strong> A vertical dashed purple arrow running alongside the Product column, labeled "Each product decreases by 4 ↓".</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Below table:</strong> A fill-in box: "Next product will be: ___" with a number keypad or text input. A "Check" button (green outline). This activates before each hidden row is revealed.</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Scripting</div>
+      <table class="script-table">
+        <tr><th style="width:46%">On-Screen Text (English)</th><th>Voiceover — Hindi + English</th></tr>
+        <tr>
+          <td class="ost">Look at this table carefully.<br><br>As the multiplier goes down by 1, what happens to the product?</td>
+          <td class="vo">"Yeh table dhyan se dekho. Jab multiplier ek ek ghatta hai, toh product mein kya badlaav aata hai?"<span class="vo-en">(Look at this table carefully. When the multiplier decreases by 1, what change happens in the product?)</span></td>
+        </tr>
+        <tr>
+          <td class="ost">3×4=12 → 2×4=8 → 1×4=4 → 0×4=0.<br><br>The product goes down by 4 each time.</td>
+          <td class="vo">"12, 8, 4, 0 — product har baar 4 se ghatt raha hai. Yeh ek pattern hai."<span class="vo-en">(12, 8, 4, 0 — the product decreases by 4 each time. This is a pattern.)</span></td>
+        </tr>
+        <tr>
+          <td class="ost">Now predict: What will (−1) × 4 be?<br>Type your answer in the box.</td>
+          <td class="vo">"Ab batao: agar pattern aage bhi chale, toh (−1) × 4 kya hoga?"<span class="vo-en">(Now tell me: if the pattern continues, what will (−1) × 4 be?)</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Interaction Detail</div>
+      <ul class="interaction-list">
+        <li><div class="sys-badge">System</div>Rows 1–4 auto-animate in one by one (200ms fade-in per row) as the voiceover plays.</li>
+        <li><div class="step-badge">Student</div>Reads the pattern. Fill-in box appears: "Next product: ___".</li>
+        <li><div class="step-badge">Student</div>Types a number (expected: −4) and taps "Check".</li>
+        <li><div class="sys-badge">System</div>If correct: Row 5 fades in with a green glow (opacity 100%). Sign pill shows <span class="rule-chip chip-neg">− Negative</span>. A "Reveal Next" button appears.</li>
+        <li><div class="step-badge">Student</div>Repeats the same predict-and-reveal process for (−2)×4 and (−3)×4.</li>
+        <li><div class="sys-badge">System</div>After all three rows are revealed, "Continue →" button activates.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Feedback Logic</div>
+      <div class="feedback-grid">
+        <div class="feedback-row">
+          <div class="attempt-tag a1">Attempt 1 — Wrong</div>
+          <div class="feedback-msg"><em>"Pattern dekho — product har baar kitna ghatt raha hai?"</em><br>(Look at the pattern — by how much is the product decreasing each time?)<br><span class="act">The Product column pulses yellow to draw attention to the decreasing values.</span></div>
+        </div>
+        <div class="feedback-row">
+          <div class="attempt-tag a2">Attempt 2 — Wrong</div>
+          <div class="feedback-msg"><em>"0 × 4 = 0 tha. Isse 4 aur ghata do."</em> (0 × 4 was 0. Subtract 4 more from it.)<br><span class="act">Show the scaffold step: "0 − 4 = ___" for the student to fill in.</span></div>
+        </div>
+        <div class="feedback-row">
+          <div class="attempt-tag a3">Attempt 3 — Wrong</div>
+          <div class="feedback-msg"><span class="act">Auto-reveal the answer (−4) with animation. Voiceover: "Yeh −4 hai — kyunki pattern ne 4 ghataane ko kaha." Move to the next hidden row automatically. No score penalty at this discovery stage.</span></div>
+        </div>
+        <div class="feedback-row">
+          <div class="attempt-tag ac">Correct Answer</div>
+          <div class="feedback-msg">A small star-burst animation plays on the row. A toast pops for 1.5 seconds: "Well done!" Proceed to the next hidden row.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ SCREEN 3 ═══ -->
+<div class="screen">
+  <div class="screen-header">
+    <div class="screen-num">3</div>
+    <div class="screen-title">Number Line — Taking Jumps to the Left</div>
+    <div class="screen-stage">Pictorial Stage</div>
+  </div>
+  <div class="screen-body">
+
+    <div class="section">
+      <div class="section-label">Page Overview</div>
+      <div class="overview-box">
+        <span class="goal-tag">Concept Building</span>
+        <p>Give students a spatial understanding of positive × negative using directed jumps on a number line. Each leftward jump represents one step into negative territory. Students control the jumps themselves, building physical intuition before the abstract rule is stated.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Visual Description</div>
+      <div class="visual-desc">
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Full-width number line:</strong> Spans −12 (left) to +3 (right). Bold horizontal baseline (2px). Tick marks at every 3 units, each labeled. Arrowheads at both ends pointing outward.</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Start marker:</strong> A filled green circle (radius 10px) at 0. Label below: "Start here" in green text.</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Three jump arcs (drawn above the number line, rainbow-arc style):</strong> Arc 1 (lightest coral, 0 → −4), Arc 2 (medium coral, −4 → −8), Arc 3 (darkest coral, −8 → −12). Each arc is labeled above it: "Jump 1 (−4)", "Jump 2 (−4)", "Jump 3 (−4)". Arcs appear one at a time when the student taps the jump button.</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Landing marker:</strong> A filled red circle (radius 10px) at −12. Label below: "Land: −12" in red text. Appears only after all 3 jumps are complete.</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Below the number line:</strong> Three sequential buttons — "Jump 1 →", "Jump 2 →", "Jump 3 →". Each activates only after the previous jump animation completes (approx. 600ms each). A running position display: "Current position: ___".</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Result box (purple, bottom of screen):</strong> Appears after Jump 3 completes — "3 × (−4) = −12 | Positive × Negative = Negative".</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Top-right note:</strong> A small label "← Leftward = negative direction" with a thin arrow pointing left.</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Scripting</div>
+      <table class="script-table">
+        <tr><th style="width:46%">On-Screen Text (English)</th><th>Voiceover — Hindi + English</th></tr>
+        <tr>
+          <td class="ost">3 × (−4) means: start at 0 and take 3 jumps of 4 steps to the LEFT.</td>
+          <td class="vo">"3 × (−4) ka matlab: 0 se shuru karo aur 4 kadam ki 3 chhalaangein baayi taraf lagao."<span class="vo-en">(3 × (−4) means: start at 0 and take 3 jumps of 4 steps to the left.)</span></td>
+        </tr>
+        <tr>
+          <td class="ost">Tap "Jump 1" to take the first step to the left.</td>
+          <td class="vo">"Pehli chhalaang lagao — 0 se −4 par pahuncho."<span class="vo-en">(Take the first jump — go from 0 to −4.)</span></td>
+        </tr>
+        <tr>
+          <td class="ost">After 3 jumps, we land on −12.<br><br>So: 3 × (−4) = −12<br>Positive × Negative = Negative ✓</td>
+          <td class="vo">"Teen chhalaangon ke baad −12 par pahunche. Isliye: Positive × Negative = Negative!"<span class="vo-en">(After three jumps we landed on −12. Therefore: Positive × Negative = Negative!)</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Interaction Detail</div>
+      <ul class="interaction-list">
+        <li><div class="step-badge">Student</div>Taps "Jump 1 →" button.</li>
+        <li><div class="sys-badge">System</div>Arc 1 draws from 0 to −4 (stroke-dashoffset animation, 600ms). Position counter: "Current position: −4". "Jump 2 →" activates.</li>
+        <li><div class="step-badge">Student</div>Taps "Jump 2 →".</li>
+        <li><div class="sys-badge">System</div>Arc 2 draws from −4 to −8. Counter: "Current position: −8". "Jump 3 →" activates.</li>
+        <li><div class="step-badge">Student</div>Taps "Jump 3 →".</li>
+        <li><div class="sys-badge">System</div>Arc 3 draws. Red landing circle appears at −12. Counter: "Current position: −12". Result box fades in. "Continue →" activates.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Feedback Logic</div>
+      <div class="feedback-grid">
+        <div class="feedback-row">
+          <div class="attempt-tag an">Guided — No wrong path</div>
+          <div class="feedback-msg">Buttons are locked in sequence — only the current jump button is active. No incorrect tap scenario is possible on this screen. A "Replay jumps" outline button appears after completion so students can rewatch the animation before continuing.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ SCREEN 4 ═══ -->
+<div class="screen">
+  <div class="screen-header">
+    <div class="screen-num">4</div>
+    <div class="screen-title">The Big Discovery — Negative × Negative = Positive</div>
+    <div class="screen-stage">Pictorial → Abstract</div>
+  </div>
+  <div class="screen-body">
+
+    <div class="section">
+      <div class="section-label">Page Overview</div>
+      <div class="overview-box">
+        <span class="goal-tag">Aha! Moment</span>
+        <p>This is the heart of the lesson. Students extend the pattern table using a fixed negative multiplicand (−4) and a changing first number (3 down to −3). The pattern forces the result of (−1)×(−4) to be +4 — students discover this themselves rather than being told.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Visual Description</div>
+      <div class="visual-desc">
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Same table format as Screen 2.</strong> Title: "Now we keep (−4) fixed and change the first number." Second factor column always shows (−4).</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Top half (rows 1–4) — pre-filled, coral fill:</strong> 3×(−4)=−12, 2×(−4)=−8, 1×(−4)=−4, 0×(−4)=0. Sign pills show <span class="rule-chip chip-neg">− Negative</span> for rows 1–3, grey "zero" for row 4. These fade in automatically.</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Bottom half (rows 5–7) — green fill, locked:</strong> (−1)×(−4), (−2)×(−4), (−3)×(−4). Product and Sign cells are blank/greyed. Revealed by student prediction.</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Right-side arrow changes direction:</strong> Now points UPWARD (green) alongside the green rows — "Products increase by +4 each step ↑".</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Row 5 — (−1)×(−4) — highlighted:</strong> Double green border (2px), subtle background pulse. This is the "moment" row.</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Below the full table:</strong> A green observation box (fades in after all rows are revealed): "The pattern would break if (−1)×(−4) were negative! So it MUST be +4. Negative × Negative = Positive."</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Scripting</div>
+      <table class="script-table">
+        <tr><th style="width:46%">On-Screen Text (English)</th><th>Voiceover — Hindi + English</th></tr>
+        <tr>
+          <td class="ost">Now (−4) is fixed. We change the first number from 3 down to −3. Watch the products carefully.</td>
+          <td class="vo">"Ab (−4) fixed hai. Pehle number ko 3 se −3 tak badlate hain. Products par dhyan do."<span class="vo-en">(Now (−4) is fixed. We change the first number from 3 to −3. Pay close attention to the products.)</span></td>
+        </tr>
+        <tr>
+          <td class="ost">Products: −12, −8, −4, 0 ...<br><br>The products are going UP by 4 each time now!</td>
+          <td class="vo">"−12, −8, −4, 0 — ab products har baar 4 se badh rahe hain! Toh (−1) × (−4) kya hoga?"<span class="vo-en">(−12, −8, −4, 0 — now the products are increasing by 4 each time! So what will (−1) × (−4) be?)</span></td>
+        </tr>
+        <tr>
+          <td class="ost">If (−1) × (−4) were −4, the pattern would break!<br><br>So it MUST be +4.<br>Negative × Negative = Positive ✓</td>
+          <td class="vo">"Agar answer −4 hota, toh pattern toot jaata! Pattern ko theek rakhne ke liye answer +4 hona chahiye. Negative × Negative = Positive — yahi prove hua!"<span class="vo-en">(If the answer were −4, the pattern would break! To keep the pattern consistent it must be +4. Negative × Negative = Positive — this is what has been proved!)</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Interaction Detail</div>
+      <ul class="interaction-list">
+        <li><div class="sys-badge">System</div>Top half (coral rows) fade in automatically one by one, 300ms apart, while voiceover plays.</li>
+        <li><div class="sys-badge">System</div>Fill-in box appears below row 4: "(−1) × (−4) = ___".</li>
+        <li><div class="step-badge">Student</div>Types the predicted product and taps "Check".</li>
+        <li><div class="sys-badge">System</div>If correct (+4): Row 5 glows green, reveals fully. Upward arrow appears. Voiceover plays the Aha! line. "Reveal Next" button appears.</li>
+        <li><div class="step-badge">Student</div>Predicts and reveals (−2)×(−4) and (−3)×(−4) in the same way.</li>
+        <li><div class="sys-badge">System</div>After all three green rows are revealed, the observation box slides up from the bottom. "Continue →" activates.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Feedback Logic</div>
+      <div class="feedback-grid">
+        <div class="feedback-row">
+          <div class="attempt-tag a1">Attempt 1 — Wrong</div>
+          <div class="feedback-msg"><em>"Upar ki rows ka pattern dekho — product badh raha hai ya ghatt raha hai?"</em><br>(Look at the rows above — is the product increasing or decreasing?)<br><span class="act">The upward green arrow pulses to direct attention to the increasing trend.</span></div>
+        </div>
+        <div class="feedback-row">
+          <div class="attempt-tag a2">Attempt 2 — Wrong</div>
+          <div class="feedback-msg"><em>"0 × (−4) = 0 tha. Ab 4 aur jodo."</em> (0 × (−4) = 0. Now add 4 more.)<br><span class="act">Show the scaffold: "0 + 4 = ___" for the student to complete. This concretises the upward step.</span></div>
+        </div>
+        <div class="feedback-row">
+          <div class="attempt-tag a3">Attempt 3 — Wrong</div>
+          <div class="feedback-msg"><span class="act">Auto-reveal +4 with the full Aha! animation and voiceover. No penalty — this is a discovery moment, not an assessment. Proceed automatically to "Reveal Next" for the remaining rows.</span></div>
+        </div>
+        <div class="feedback-row">
+          <div class="attempt-tag ac">Correct on Any Attempt</div>
+          <div class="feedback-msg">Green burst animation on the revealed row. "Excellent! You found it!" toast (2 seconds). The observation box slides in immediately for reinforcement.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ SCREEN 5 ═══ -->
+<div class="screen">
+  <div class="screen-header">
+    <div class="screen-num">5</div>
+    <div class="screen-title">Sign Rules — All Four Cases in One View</div>
+    <div class="screen-stage">Abstract Stage</div>
+  </div>
+  <div class="screen-body">
+
+    <div class="section">
+      <div class="section-label">Page Overview</div>
+      <div class="overview-box">
+        <span class="goal-tag">Concept Consolidation</span>
+        <p>Present all four sign-rule combinations in one memorable 2×2 visual grid. Students tap each card to see a worked example. A single mnemonic rule ties everything together and prepares them for practice.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Visual Description</div>
+      <div class="visual-desc">
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>2×2 grid of cards</strong> fills the centre of the screen. Each card is a large rounded rectangle (~270px wide, ~170px tall).</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Card 1 — top-left, green:</strong> Large text: "(+) × (+)". Below a thin divider: "= (+)" in bold. Bottom tag: "e.g. 3 × 4 = 12".</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Card 2 — top-right, coral:</strong> "(+) × (−)" | "= (−)" | "e.g. 3 × (−4) = −12".</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Card 3 — bottom-left, coral:</strong> "(−) × (+)" | "= (−)" | "e.g. (−3) × 4 = −12".</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Card 4 — bottom-right, green with a glowing pulsing border:</strong> "(−) × (−)" | "= (+) !" in bold green | "e.g. (−3) × (−4) = +12". This card has a repeating subtle glow pulse (1.5px green outer shadow, 2s cycle) to mark it as the special discovery case.</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Below the grid — amber mnemonic banner:</strong> "Same signs → Positive (+) &nbsp;|&nbsp; Different signs → Negative (−)".</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Scripting</div>
+      <table class="script-table">
+        <tr><th style="width:46%">On-Screen Text (English)</th><th>Voiceover — Hindi + English</th></tr>
+        <tr>
+          <td class="ost">There are only 4 cases in integer multiplication. Here they all are — in one place.</td>
+          <td class="vo">"Integer multiplication mein sirf 4 cases hote hain. Yeh sab ek hi jagah hain."<span class="vo-en">(In integer multiplication there are only 4 cases. They are all in one place here.)</span></td>
+        </tr>
+        <tr>
+          <td class="ost">Tap any card to see a worked example inside it.</td>
+          <td class="vo">"Kisi bhi card ko tap karo — ek example andar dekhoge."<span class="vo-en">(Tap any card — you will see a worked example inside it.)</span></td>
+        </tr>
+        <tr>
+          <td class="ost">Remember this one rule:<br>Same signs → Positive. Different signs → Negative.</td>
+          <td class="vo">"Ek rule yaad rakho: same signs hain toh answer positive. Alag signs hain toh answer negative."<span class="vo-en">(Remember one rule: if signs are the same the answer is positive. If signs are different the answer is negative.)</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Interaction Detail</div>
+      <ul class="interaction-list">
+        <li><div class="sys-badge">System</div>Cards appear with staggered fade-in (Cards 1 → 2 → 3 → 4, 250ms apart). Card 4 has an extra glow pulse on entry to draw the eye.</li>
+        <li><div class="step-badge">Student</div>Taps any card.</li>
+        <li><div class="sys-badge">System</div>Card scales up slightly (1.05×) and a step-by-step worked example appears inside: e.g. for Card 4 — "(−3) × (−4): Same signs → Positive → 3 × 4 = 12 → Answer: +12". A "Got it ✓" mini-button collapses the card.</li>
+        <li><div class="step-badge">Student</div>After reviewing all four (or as many as desired), taps "Continue →" at the bottom.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Feedback Logic</div>
+      <div class="feedback-grid">
+        <div class="feedback-row">
+          <div class="attempt-tag an">Exploratory — No wrong path</div>
+          <div class="feedback-msg">No right-or-wrong interaction on this screen. Students freely tap cards. The goal is familiarity with all four cases before the practice phase begins on Screen 7.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ SCREEN 6 ═══ -->
+<div class="screen">
+  <div class="screen-header">
+    <div class="screen-num">6</div>
+    <div class="screen-title">Error Bridge — Fixing the Most Common Mistake</div>
+    <div class="screen-stage">Misconception Bridge</div>
+  </div>
+  <div class="screen-body">
+
+    <div class="section">
+      <div class="section-label">Page Overview</div>
+      <div class="overview-box">
+        <span class="goal-tag">Error Bridge</span>
+        <p>Before independent practice, directly address the most common student misconception — thinking that negative × negative = negative. This screen shows the wrong thinking, exposes it using the pattern, and clearly corrects it. It resets the student's mental model before they attempt problems on their own.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Visual Description</div>
+      <div class="visual-desc">
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Split-screen layout — left and right panels side by side.</strong></div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Left panel (pale red, 1px red border, rounded):</strong> Header "Common Mistake ✗" in red. Below: a cartoon student face (simple, neutral) with a thought bubble: "Both numbers are negative → answer must be negative?" A wrong answer displayed in large red text: "(−3) × (−4) = −12" with a diagonal red crossed-out line through it.</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Centre:</strong> A bold purple arrow pointing right, labeled "But the pattern says..."</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Right panel (pale green, 1.5px green border, rounded):</strong> Header "What the Pattern Shows ✓" in green. A compact 3-row pattern table: 0×(−4)=0, (−1)×(−4)=+4, (−2)×(−4)=+8. A green upward arrow: "+4 each step ↑". Final line in bold green: "(−3) × (−4) = +12 ✓".</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Below both panels:</strong> The mnemonic banner (amber): "Same signs → Positive. Different signs → Negative."</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Scripting</div>
+      <table class="script-table">
+        <tr><th style="width:46%">On-Screen Text (English)</th><th>Voiceover — Hindi + English</th></tr>
+        <tr>
+          <td class="ost">Many students think: both numbers are negative, so the answer must be negative. This is the most common mistake.</td>
+          <td class="vo">"Bahut se students sochte hain: dono numbers negative hain, toh answer bhi negative hoga. Yeh ek bahut common galti hai."<span class="vo-en">(Many students think: both numbers are negative so the answer must also be negative. This is a very common mistake.)</span></td>
+        </tr>
+        <tr>
+          <td class="ost">But our pattern table has already proved: (−3) × (−4) = +12, not −12.</td>
+          <td class="vo">"Lekin hamara pattern table prove kar chuka hai: (−3) × (−4) = +12 hai, −12 nahi."<span class="vo-en">(But our pattern table has already proved: (−3) × (−4) = +12, not −12.)</span></td>
+        </tr>
+        <tr>
+          <td class="ost">Rule: Same signs → Always Positive.<br>Different signs → Always Negative.</td>
+          <td class="vo">"Rule yaad rakho: same signs hone par answer HAMESHA positive hoga. Alag signs par HAMESHA negative."<span class="vo-en">(Remember the rule: when signs are the same the answer is ALWAYS positive. When signs are different it is ALWAYS negative.)</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Interaction Detail</div>
+      <ul class="interaction-list">
+        <li><div class="sys-badge">System</div>Left panel fades in first (400ms). The wrong answer and crossed-out animation play automatically.</li>
+        <li><div class="sys-badge">System</div>After 2 seconds, the "But the pattern says..." arrow animates (draws left to right). Right panel fades in.</li>
+        <li><div class="step-badge">Student</div>Can tap the compact pattern table on the right to expand it to full size for review.</li>
+        <li><div class="step-badge">Student</div>Taps "I understand — let me practise" button (green, bottom centre) to proceed to Screen 7.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Feedback Logic</div>
+      <div class="feedback-grid">
+        <div class="feedback-row">
+          <div class="attempt-tag an">Explainer — No student input required</div>
+          <div class="feedback-msg">This screen plays automatically. The only student action is tapping "I understand" to continue. No branching or wrong-answer path exists. Purpose: clear the misconception before independent practice, not to assess.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ SCREEN 7 ═══ -->
+<div class="screen">
+  <div class="screen-header">
+    <div class="screen-num">7</div>
+    <div class="screen-title">Guided Practice — Apply the Sign Rule</div>
+    <div class="screen-stage">Interactive Workspace</div>
+  </div>
+  <div class="screen-body">
+
+    <div class="section">
+      <div class="section-label">Page Overview</div>
+      <div class="overview-box">
+        <span class="goal-tag">Practice</span>
+        <p>Students solve three problems independently with adaptive scaffolding that activates only when they make errors. Problems increase in difficulty: Q1 is a direct (−)×(−) case, Q2 uses mixed signs, Q3 is a three-factor extension. A "Hint" button is always available but not pushed.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Visual Description</div>
+      <div class="visual-desc">
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>One question at a time.</strong> Progress indicator at the top: three dots — ● ○ ○ → ● ● ○ → ● ● ●</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Question card:</strong> Purple fill, white text, centred on screen. Large readable font (20px). Below it: a text entry box (or 4-option MCQ for Q1) with a "Check" button (green, right of box). A "Hint" button (amber, outline) sits below — visible but not highlighted.</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Top-right score counter:</strong> "⭐ 0 / 3" — fills one star per correct answer.</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Q1:</strong> "(−6) × (−5) = ?" &nbsp; <strong>Q2:</strong> "(−8) × 7 = ?" &nbsp; <strong>Q3 (Extension):</strong> "(−3) × (−3) × (−3) = ?"</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Correct confirmation:</strong> Green toast at bottom ("Correct! ✓") and one star fills in the score counter. Next question card slides in from the right.</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Scripting</div>
+      <table class="script-table">
+        <tr><th style="width:46%">On-Screen Text (English)</th><th>Voiceover — Hindi + English</th></tr>
+        <tr>
+          <td class="ost">Q1: Find (−6) × (−5).<br><br>Step 1: Check the signs. Step 2: Multiply the numbers. Step 3: Apply the rule.</td>
+          <td class="vo">"Pehle signs check karo, phir numbers multiply karo, phir sign rule lagao."<span class="vo-en">(First check the signs, then multiply the numbers, then apply the sign rule.)</span></td>
+        </tr>
+        <tr>
+          <td class="ost">Q2: Find (−8) × 7.<br><br>Are the signs the same or different?</td>
+          <td class="vo">"Signs same hain ya alag? Wahi decide karega ki answer positive hoga ya negative."<span class="vo-en">(Are the signs the same or different? That will decide whether the answer is positive or negative.)</span></td>
+        </tr>
+        <tr>
+          <td class="ost">Q3: (−3) × (−3) × (−3) = ?<br><br>Tip: Multiply any two numbers first. Then multiply the result by the third.</td>
+          <td class="vo">"Teen numbers hain — pehle koi bhi do multiply karo, phir us result ko teesre se."<span class="vo-en">(There are three numbers — first multiply any two, then multiply that result by the third.)</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Interaction Detail</div>
+      <ul class="interaction-list">
+        <li><div class="step-badge">Student</div>Q1: Types or selects answer, taps "Check". Expected: +30.</li>
+        <li><div class="sys-badge">System</div>If correct: green toast, one star fills. Q2 card slides in from the right.</li>
+        <li><div class="step-badge">Student</div>Q2: Types answer, taps "Check". Expected: −56.</li>
+        <li><div class="sys-badge">System</div>If correct: green toast, second star fills. Q3 card slides in.</li>
+        <li><div class="step-badge">Student</div>Q3 (Extension): A two-step work area appears — "Step 1: (−3) × (−3) = ___" then "Step 2: ___ × (−3) = ___". Student fills both boxes.</li>
+        <li><div class="sys-badge">System</div>If all correct (Q3 answer = −27): Three stars animate one by one. Brief confetti burst (green dots). "Excellent! You mastered it!" full-screen toast for 2 seconds. "Continue →" activates.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Feedback Logic</div>
+      <div class="feedback-grid">
+        <div class="feedback-row">
+          <div class="attempt-tag a1">Q1 — Attempt 1 Wrong</div>
+          <div class="feedback-msg"><em>"Signs kaisi hain — same ya different?"</em> (What are the signs — same or different?)<br><span class="act">The sign rule mnemonic banner slides up from the bottom of the screen as a reference.</span></div>
+        </div>
+        <div class="feedback-row">
+          <div class="attempt-tag a2">Q1 — Attempt 2 Wrong</div>
+          <div class="feedback-msg"><em>"Dono negative hain — same signs. Toh answer positive hoga. Ab 6 × 5 = ___"</em><br>(Both are negative — same signs. So answer will be positive. Now calculate 6 × 5 = ___)<br><span class="act">Show two-step scaffold on screen: "Step 1: Signs same → Answer is + | Step 2: 6 × 5 = ___".</span></div>
+        </div>
+        <div class="feedback-row">
+          <div class="attempt-tag a3">Q1 — Attempt 3 Wrong</div>
+          <div class="feedback-msg"><span class="act">Auto-demonstrate full solution with animation: "(−6) × (−5) → Same signs → Positive → 6 × 5 = 30 → Answer: +30". Voiceover narrates each step. Proceed to Q2 automatically.</span></div>
+        </div>
+        <div class="feedback-row">
+          <div class="attempt-tag a1">Q2 — Attempt 1 Wrong</div>
+          <div class="feedback-msg"><em>"Signs alag hain — toh answer negative hoga. Ab 8 × 7 karo."</em><br>(Signs are different — so the answer will be negative. Now calculate 8 × 7.)</div>
+        </div>
+        <div class="feedback-row">
+          <div class="attempt-tag a1">Q3 — Attempt 1 Wrong</div>
+          <div class="feedback-msg"><em>"Pehle sirf pehle do numbers lo: (−3) × (−3) = ?"</em><br>(First take only the first two numbers: (−3) × (−3) = ?)<br><span class="act">Highlight Step 1 box only. Step 2 box is greyed out until Step 1 is correct.</span></div>
+        </div>
+        <div class="feedback-row">
+          <div class="attempt-tag ac">All 3 Correct</div>
+          <div class="feedback-msg">Three stars animate one by one (500ms apart). Confetti burst (green dots, 1.5 seconds). Toast: "You have mastered integer multiplication!" Score displayed: 3/3.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ SCREEN 8 ═══ -->
+<div class="screen">
+  <div class="screen-header">
+    <div class="screen-num">8</div>
+    <div class="screen-title">Summary and Recap</div>
+    <div class="screen-stage">Closure</div>
+  </div>
+  <div class="screen-body">
+
+    <div class="section">
+      <div class="section-label">Page Overview</div>
+      <div class="overview-box">
+        <span class="goal-tag">Closure</span>
+        <p>Consolidate the full learning journey — from Rohan's real-life debt to the abstract sign rule — in three clear steps. Students leave with one memorable rule and are pointed to NCERT Exercise 1.3 for further practice.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Visual Description</div>
+      <div class="visual-desc">
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Three horizontally connected cards</strong>, linked by bold rightward arrows drawn between them. Each card is a large rounded rectangle (~200px wide, ~120px tall).</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Card 1 — green:</strong> Small icon: two stacked flat rectangles (representing coins). Label: "Step 1 — Real Life". Sub-text: "Rohan's ₹50 monthly debt."</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Card 2 — purple:</strong> Small icon: a simple 3-row table outline (three thin horizontal lines in a box). Label: "Step 2 — Pattern Table". Sub-text: "Products change by a fixed amount."</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Card 3 — amber:</strong> Small icon: a "+" and "−" sign side by side. Label: "Step 3 — Sign Rule". Sub-text: "Same → (+) | Different → (−)".</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Below the cards — dark green banner, white text:</strong> "SAME SIGNS = POSITIVE &nbsp;|&nbsp; DIFFERENT SIGNS = NEGATIVE".</div></div>
+        <div class="vis-item"><div class="vis-dot"></div><div><strong>Bottom row — two buttons:</strong> Left: "Replay a section" (outline style). Right: "Try NCERT Exercise →" (filled green). Below them: a small note in grey: "NCERT Class VII, Chapter 1 — Exercise 1.3".</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Scripting</div>
+      <table class="script-table">
+        <tr><th style="width:46%">On-Screen Text (English)</th><th>Voiceover — Hindi + English</th></tr>
+        <tr>
+          <td class="ost">Today we discovered: Negative × Negative = Positive — and we proved it using a pattern, not just a rule to memorise.</td>
+          <td class="vo">"Aaj humne discover kiya: Negative × Negative = Positive — aur humne ise ek pattern se prove kiya, sirf rule yaad karke nahi."<span class="vo-en">(Today we discovered: Negative × Negative = Positive — and we proved it using a pattern, not just by memorizing a rule.)</span></td>
+        </tr>
+        <tr>
+          <td class="ost">Remember just one rule: Same signs → Positive. Different signs → Negative.</td>
+          <td class="vo">"Sirf ek rule yaad rakho: same signs — positive. Alag signs — negative. Bas!"<span class="vo-en">(Remember just one rule: same signs — positive. Different signs — negative. That is all!)</span></td>
+        </tr>
+        <tr>
+          <td class="ost">Tap any card to replay that section. Or try the NCERT exercise to practise more.</td>
+          <td class="vo">"Koi bhi card tap karo us section ko dobara dekhne ke liye. Ya NCERT exercise try karo aur zyada practice karo."<span class="vo-en">(Tap any card to replay that section. Or try the NCERT exercise for more practice.)</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Interaction Detail</div>
+      <ul class="interaction-list">
+        <li><div class="sys-badge">System</div>Cards slide up one by one (300ms stagger). Connecting arrows draw between them after all three cards appear.</li>
+        <li><div class="step-badge">Student</div>Taps any of the three cards.</li>
+        <li><div class="sys-badge">System</div>Module jumps to the opening screen of that section — Screen 1 for Card 1, Screen 2 for Card 2, Screen 5 for Card 3. A "Back to Summary" button appears at the top throughout the replay.</li>
+        <li><div class="step-badge">Student</div>Taps "Try NCERT Exercise →".</li>
+        <li><div class="sys-badge">System</div>Opens Exercise 1.3 within the app or links to the NCERT digital textbook at the correct page.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Feedback Logic</div>
+      <div class="feedback-grid">
+        <div class="feedback-row">
+          <div class="attempt-tag an">Closure — Navigation only</div>
+          <div class="feedback-msg">No right-or-wrong interaction on this screen. All taps are navigation. Assessment happens in the NCERT exercise. This screen is designed for reflection and closure only.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ FOOTER NOTES ═══ -->
+<hr class="divider"/>
+<div class="notes">
+  <div class="section-label">Developer and Designer Implementation Notes</div>
+  <div class="notes-grid">
+    <div>
+      <strong>Hindi rendering:</strong> Use Noto Sans Devanagari (Google Fonts, free licence). All Hindi must appear in Devanagari script in the production build — do not use transliterated Roman script.<br><br>
+      <strong>Colour system:</strong> Green (#5a9e3a / #edf6e5) = positive/correct. Coral (#d4572e / #fdf0ec) = negative/error. Purple (#6b5fc0 / #f0eefc) = abstract concepts and neutral frames. Amber (#c98a10 / #fef8eb) = hints and mnemonics.
+    </div>
+    <div>
+      <strong>Animations:</strong> Row reveals → fade-in (300ms ease). Number line arcs → SVG stroke-dashoffset (600ms ease-in-out). Card entry → slide-up + opacity (250ms ease). No bounce or spring physics. Keep pacing calm and classroom-appropriate.<br><br>
+      <strong>Tap targets:</strong> Minimum 44×44px on all interactive elements (WCAG AA compliance). Essential for tablet use in classroom environments.<br><br>
+      <strong>Voiceover:</strong> Record in a natural, teacher-style Hindi voice at approximately 130 words/minute. Provide bilingual subtitle tracks (Hindi Devanagari + English). Do not use AI TTS for the production version.
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
