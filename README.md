@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Storyboard Prototype</title>
+<style>
+body{font-family:Arial;margin:0;background:#f5f5f5}
+.container{max-width:900px;margin:auto;padding:20px}
+.screen{display:none;background:#fff;padding:20px;border-radius:10px}
+.screen.active{display:block}
+.nav{display:flex;justify-content:space-between;margin-top:20px}
+button{padding:10px 16px;border:none;border-radius:6px;background:#007bff;color:#fff;cursor:pointer}
+button:disabled{background:#ccc}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="screen active">
+<h2>Screen 1: Story Hook</h2>
+<p>Ria and Arjun introduction</p>
+<div class="nav">
+<button disabled>Previous</button>
+<button onclick="nextScreen()">Next</button>
+</div>
+</div>
+
+<div class="screen">
+<h2>Screen 2: Concept</h2>
+<p>Multiplication as repeated addition</p>
+<div class="nav">
+<button onclick="prevScreen()">Previous</button>
+<button onclick="nextScreen()">Next</button>
+</div>
+</div>
+
+<div class="screen">
+<h2>Screen 3: Practice</h2>
+<input id="q1">
+<button onclick="check1()">Check</button>
+<p id="r1"></p>
+<div class="nav">
+<button onclick="prevScreen()">Previous</button>
+<button onclick="nextScreen()">Next</button>
+</div>
+</div>
+
+<div class="screen">
+<h2>Screen 4: Summary</h2>
+<p>Same signs → Positive | Different signs → Negative</p>
+<div class="nav">
+<button onclick="prevScreen()">Previous</button>
+<button disabled>End</button>
+</div>
+</div>
+
+</div>
+
+<script>
+let current=0;
+let screens=document.querySelectorAll('.screen');
+
+function showScreen(i){
+screens.forEach(s=>s.classList.remove('active'));
+screens[i].classList.add('active');
+}
+
+function nextScreen(){
+if(current<screens.length-1){current++;showScreen(current);}
+}
+
+function prevScreen(){
+if(current>0){current--;showScreen(current);}
+}
+
+function check1(){
+let v=document.getElementById('q1').value;
+document.getElementById('r1').innerText = v==15 ? "Correct" : "Try again";
+}
+</script>
+
+</body>
+</html>
