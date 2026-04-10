@@ -1,226 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Interactive Prototype - Multiplication of Integers</title>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Storyboard Prototype</title>
 <style>
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: #faf9f7;
-}
-
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
-}
-
-.screen {
-  display: none;
-  border: 1px solid #ddd;
-  padding: 20px;
-  border-radius: 10px;
-  background: white;
-}
-
-.screen.active {
-  display: block;
-}
-
-h2 {
-  margin-top: 0;
-}
-
-.nav {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
-button {
-  padding: 10px 18px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  background: #2d7ec9;
-  color: white;
-}
-
-button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
-
-.card {
-  border: 1px solid #ccc;
-  padding: 15px;
-  margin: 10px 0;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.card.active {
-  background: #eaf3fc;
-}
-
-.counter {
-  font-size: 18px;
-  margin-top: 15px;
-}
+body{font-family:Arial;margin:0;background:#f5f5f5}
+.container{max-width:900px;margin:auto;padding:20px}
+.screen{display:none;background:#fff;padding:20px;border-radius:10px}
+.screen.active{display:block}
+h2{margin-top:0}
+.nav{display:flex;justify-content:space-between;margin-top:20px}
+button{padding:10px 16px;border:none;border-radius:6px;background:#007bff;color:#fff;cursor:pointer}
+button:disabled{background:#ccc}
+.card{padding:15px;border:1px solid #ddd;margin:10px 0;border-radius:8px;cursor:pointer}
 </style>
 </head>
-
 <body>
 
 <div class="container">
 
 <div class="screen active">
-  <h2>Screen 1: Rohan's Debt</h2>
-  <p>Tap each month to calculate total debt.</p>
-  <div class="card" onclick="addDebt()">Month 1</div>
-  <div class="card" onclick="addDebt()">Month 2</div>
-  <div class="card" onclick="addDebt()">Month 3</div>
-  <div class="counter" id="debt">Total Debt: ₹0</div>
-  <div class="nav">
-    <button disabled>Previous</button>
-    <button onclick="nextScreen()">Next</button>
-  </div>
+<h2>Screen 1: Story Hook</h2>
+<p>Ria and Arjun discuss multiplication of integers.</p>
+<div class="nav">
+<button disabled>Previous</button>
+<button onclick="nextScreen()">Next</button>
+</div>
 </div>
 
 <div class="screen">
-  <h2>Screen 2: Pattern</h2>
-  <p>3 × 4 = 12</p>
-  <p>2 × 4 = 8</p>
-  <p>1 × 4 = 4</p>
-  <p>0 × 4 = 0</p>
-  <p><strong>Predict: (-1 × 4) = ?</strong></p>
-  <input type="number" id="ans"/>
-  <button onclick="checkAnswer()">Check</button>
-  <p id="result"></p>
-  <div class="nav">
-    <button onclick="prevScreen()">Previous</button>
-    <button onclick="nextScreen()">Next</button>
-  </div>
+<h2>Screen 2: Repeated Addition</h2>
+<p>3 × 4 = 4 + 4 + 4 = 12</p>
+<div class="nav">
+<button onclick="prevScreen()">Previous</button>
+<button onclick="nextScreen()">Next</button>
+</div>
 </div>
 
 <div class="screen">
-  <h2>Screen 3: Number Line Concept</h2>
-  <p>3 × (-4) = -12</p>
-  <p>Positive × Negative = Negative</p>
-  <div class="nav">
-    <button onclick="prevScreen()">Previous</button>
-    <button onclick="nextScreen()">Next</button>
-  </div>
+<h2>Screen 3: Practice</h2>
+<p>5 × 3 = ?</p>
+<input id="q1">
+<button onclick="check1()">Check</button>
+<p id="r1"></p>
+<div class="nav">
+<button onclick="prevScreen()">Previous</button>
+<button onclick="nextScreen()">Next</button>
+</div>
 </div>
 
 <div class="screen">
-  <h2>Screen 4: Key Discovery</h2>
-  <p>(-1 × -4) = +4</p>
-  <p><strong>Negative × Negative = Positive</strong></p>
-  <div class="nav">
-    <button onclick="prevScreen()">Previous</button>
-    <button onclick="nextScreen()">Next</button>
-  </div>
+<h2>Screen 4: Case 1</h2>
+<p>(+) × (+) = (+)</p>
+<div class="nav">
+<button onclick="prevScreen()">Previous</button>
+<button onclick="nextScreen()">Next</button>
+</div>
 </div>
 
 <div class="screen">
-  <h2>Screen 5: Sign Rules</h2>
-  <ul>
-    <li>+ × + = +</li>
-    <li>+ × - = -</li>
-    <li>- × + = -</li>
-    <li>- × - = +</li>
-  </ul>
-  <div class="nav">
-    <button onclick="prevScreen()">Previous</button>
-    <button onclick="nextScreen()">Next</button>
-  </div>
+<h2>Screen 5: Case 2</h2>
+<p>(−) × (+) = (−)</p>
+<div class="nav">
+<button onclick="prevScreen()">Previous</button>
+<button onclick="nextScreen()">Next</button>
+</div>
 </div>
 
 <div class="screen">
-  <h2>Screen 6: Common Mistake</h2>
-  <p>Wrong: (-3 × -4) = -12 ❌</p>
-  <p>Correct: (-3 × -4) = +12 ✅</p>
-  <div class="nav">
-    <button onclick="prevScreen()">Previous</button>
-    <button onclick="nextScreen()">Next</button>
-  </div>
+<h2>Screen 6: Case 3</h2>
+<p>(−) × (−) = (+)</p>
+<div class="nav">
+<button onclick="prevScreen()">Previous</button>
+<button onclick="nextScreen()">Next</button>
+</div>
 </div>
 
 <div class="screen">
-  <h2>Screen 7: Practice</h2>
-  <p>(-6 × -5) = ?</p>
-  <input type="number" id="q1"/>
-  <button onclick="checkQ1()">Check</button>
-  <p id="q1res"></p>
-  <div class="nav">
-    <button onclick="prevScreen()">Previous</button>
-    <button onclick="nextScreen()">Next</button>
-  </div>
+<h2>Screen 7: Mixed Practice</h2>
+<p>(−3 × −4) = ?</p>
+<input id="q2">
+<button onclick="check2()">Check</button>
+<p id="r2"></p>
+<div class="nav">
+<button onclick="prevScreen()">Previous</button>
+<button onclick="nextScreen()">Next</button>
+</div>
 </div>
 
 <div class="screen">
-  <h2>Summary</h2>
-  <p><strong>Same signs → Positive</strong></p>
-  <p><strong>Different signs → Negative</strong></p>
-  <div class="nav">
-    <button onclick="prevScreen()">Previous</button>
-    <button disabled>End</button>
-  </div>
+<h2>Screen 8: Summary</h2>
+<p>Same signs → Positive</p>
+<p>Different signs → Negative</p>
+<div class="nav">
+<button onclick="prevScreen()">Previous</button>
+<button disabled>End</button>
+</div>
 </div>
 
 </div>
 
 <script>
-let current = 0;
-let screens = document.querySelectorAll(".screen");
+let current=0;
+let screens=document.querySelectorAll('.screen');
 
-function showScreen(index) {
-  screens.forEach(s => s.classList.remove("active"));
-  screens[index].classList.add("active");
+function showScreen(i){
+screens.forEach(s=>s.classList.remove('active'));
+screens[i].classList.add('active');
 }
 
-function nextScreen() {
-  if (current < screens.length - 1) {
-    current++;
-    showScreen(current);
-  }
+function nextScreen(){
+if(current<screens.length-1){current++;showScreen(current);}
 }
 
-function prevScreen() {
-  if (current > 0) {
-    current--;
-    showScreen(current);
-  }
+function prevScreen(){
+if(current>0){current--;showScreen(current);}
 }
 
-let total = 0;
-function addDebt() {
-  total += 50;
-  document.getElementById("debt").innerText = "Total Debt: ₹" + total;
+function check1(){
+let v=document.getElementById('q1').value;
+document.getElementById('r1').innerText = v==15 ? "Correct" : "Try again";
 }
 
-function checkAnswer() {
-  let val = document.getElementById("ans").value;
-  let res = document.getElementById("result");
-  if (val == -4) {
-    res.innerText = "Correct!";
-  } else {
-    res.innerText = "Try again.";
-  }
-}
-
-function checkQ1() {
-  let val = document.getElementById("q1").value;
-  let res = document.getElementById("q1res");
-  if (val == 30) {
-    res.innerText = "Correct!";
-  } else {
-    res.innerText = "Incorrect.";
-  }
+function check2(){
+let v=document.getElementById('q2').value;
+document.getElementById('r2').innerText = v==12 ? "Correct" : "Try again";
 }
 </script>
 
