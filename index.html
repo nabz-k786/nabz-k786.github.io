@@ -1,67 +1,1589 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SCORM Module</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Ria & Arjun's Number Adventure</title>
 <style>
-body{font-family:Arial;margin:0;background:#f4f6fb}
-.container{max-width:1000px;margin:auto;padding:20px}
-.screen{display:none;background:#fff;padding:20px;border-radius:12px}
-.screen.active{display:block}
-button{padding:10px 16px;border:none;border-radius:8px;background:#2563eb;color:#fff;cursor:pointer}
-.nav{display:flex;justify-content:space-between;margin-top:20px}
-.header{font-size:22px;font-weight:bold;margin-bottom:10px}
-</style>
-<script>
-// basic SCORM API wrapper
-function initSCORM(){
- try{
-   var api = window.parent.API || window.parent.API_1484_11;
-   if(api){console.log("SCORM connected")}
- }catch(e){}
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --green:#2E7D32;--green-l:#4CAF50;--green-xl:#E8F5E9;--green-dark:#1B5E20;
+  --coral:#C62828;--coral-l:#EF5350;--coral-xl:#FFEBEE;
+  --purple:#6A1B9A;--purple-l:#AB47BC;--purple-xl:#F3E5F5;
+  --amber:#E65100;--amber-l:#FF6D00;--amber-xl:#FFF3E0;
+  --gold:#F9A825;--gold-l:#FFD600;--gold-xl:#FFFDE7;
+  --blue:#1565C0;--blue-l:#42A5F5;--blue-xl:#E3F2FD;
+  --bg:#FAFAF7;--white:#FFFFFF;--dark:#1A1A1A;--mid:#424242;--muted:#757575;--border:#E0E0E0;
+  --r:16px;--r-sm:8px;--r-lg:24px;
+  --shadow:0 4px 20px rgba(0,0,0,0.10);--shadow-sm:0 2px 8px rgba(0,0,0,0.08);
+  --font:'Nunito',sans-serif;
 }
-window.onload=initSCORM;
-</script>
+html,body{height:100%;width:100%;overflow:hidden;background:#1a1a2e;font-family:var(--font);}
+#app{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+.device{width:390px;height:700px;background:var(--bg);border-radius:32px;overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(0,0,0,0.5),0 0 0 8px #2a2a3e;display:flex;flex-direction:column;}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);transition:opacity 0.3s,transform 0.3s;}
+.screen.hidden{opacity:0;pointer-events:none;transform:translateX(30px);}
+/* NAV BAR */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 8px;background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0;z-index:10;}
+.nav-title{font-size:14px;font-weight:800;color:var(--dark);}
+.nav-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--green-xl);color:var(--green-dark);}
+/* PROGRESS DOTS */
+.prog-dots{display:flex;gap:5px;justify-content:center;padding:6px 0;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:background 0.3s;}
+.dot.active{background:var(--green);}
+/* SCROLL AREA */
+.scroll-area{flex:1;overflow-y:auto;padding:16px;}
+.scroll-area::-webkit-scrollbar{display:none;}
+/* CARDS */
+.card{background:var(--white);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--shadow-sm);border:1.5px solid var(--border);}
+.card.green{background:var(--green-xl);border-color:#A5D6A7;}
+.card.coral{background:var(--coral-xl);border-color:#FFAB91;}
+.card.purple{background:var(--purple-xl);border-color:#CE93D8;}
+.card.amber{background:var(--amber-xl);border-color:#FFCC80;}
+.card.gold{background:var(--gold-xl);border-color:#FFE082;}
+.card.blue{background:var(--blue-xl);border-color:#90CAF9;}
+/* CHARACTERS */
+.char-row{display:flex;justify-content:space-around;align-items:flex-end;padding:8px 20px;gap:12px;}
+.char{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.char-body{width:68px;height:90px;border-radius:50% 50% 40% 40%;position:relative;display:flex;align-items:center;justify-content:center;font-size:32px;transition:transform 0.3s;}
+.char-body.bounce{animation:bounce 0.5s ease;}
+.char-ria{background:linear-gradient(160deg,#4CAF50,#2E7D32);}
+.char-arjun{background:linear-gradient(160deg,#42A5F5,#1565C0);}
+.char-label{font-size:12px;font-weight:800;color:var(--mid);}
+.char-badge{font-size:10px;padding:2px 8px;border-radius:10px;background:var(--white);font-weight:700;box-shadow:var(--shadow-sm);}
+/* SPEECH BUBBLES */
+.bubble-container{display:flex;flex-direction:column;gap:8px;padding:0 12px;}
+.bubble{padding:10px 14px;border-radius:18px;font-size:13px;font-weight:600;line-height:1.5;max-width:88%;animation:popIn 0.2s ease;}
+.bubble.ria{background:var(--green-xl);border:1.5px solid #A5D6A7;color:var(--green-dark);align-self:flex-end;border-bottom-right-radius:4px;}
+.bubble.arjun{background:var(--blue-xl);border:1.5px solid #90CAF9;color:var(--blue);align-self:flex-start;border-bottom-left-radius:4px;}
+.bubble-name{font-size:10px;font-weight:800;opacity:0.7;margin-bottom:2px;}
+/* BUTTONS */
+.btn{border:none;border-radius:var(--r);font-family:var(--font);font-weight:800;cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.btn:active{transform:scale(0.96);}
+.btn-primary{background:var(--green);color:#fff;padding:14px 28px;font-size:15px;width:100%;border-radius:var(--r);}
+.btn-primary:hover{background:var(--green-dark);}
+.btn-secondary{background:var(--white);color:var(--dark);border:2px solid var(--border);padding:12px 20px;font-size:14px;}
+.btn-coral{background:var(--coral);color:#fff;padding:14px 28px;font-size:15px;width:100%;}
+.btn-amber{background:var(--amber);color:#fff;padding:14px 24px;font-size:14px;}
+.btn-purple{background:var(--purple);color:#fff;padding:14px 28px;font-size:15px;width:100%;}
+.btn-pulse{animation:pulse 1.5s infinite;}
+.btn-sm{padding:8px 16px;font-size:13px;border-radius:var(--r-sm);}
+/* NUMBER LINE */
+.number-line-wrap{background:var(--white);border-radius:var(--r);padding:20px 12px 16px;border:1.5px solid var(--border);position:relative;overflow:visible;}
+.nl-svg{width:100%;overflow:visible;}
+/* INPUT */
+.input-box{border:2.5px solid var(--border);border-radius:var(--r-sm);padding:12px 16px;font-family:var(--font);font-size:18px;font-weight:800;width:100%;outline:none;text-align:center;transition:border-color 0.2s;}
+.input-box:focus{border-color:var(--green);}
+.input-box.correct{border-color:var(--green);background:var(--green-xl);}
+.input-box.wrong{border-color:var(--coral);background:var(--coral-xl);animation:shake 0.4s;}
+/* STAR SCORE */
+.stars{display:flex;gap:4px;align-items:center;}
+.star{font-size:20px;opacity:0.3;transition:all 0.3s;}
+.star.filled{opacity:1;animation:starPop 0.4s ease;}
+/* TOAST */
+.toast{position:absolute;top:70px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:700;z-index:100;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;}
+.toast.green-toast{background:var(--green);}
+.toast.red-toast{background:var(--coral);}
+.toast.show{opacity:1;}
+/* RULE CARD */
+.rule-card{border-radius:var(--r);padding:14px 16px;margin:8px 0;display:flex;align-items:center;gap:10px;font-weight:700;font-size:14px;}
+.rule-card.green{background:linear-gradient(135deg,var(--green-xl),#C8E6C9);border-left:4px solid var(--green);}
+.rule-card.coral{background:linear-gradient(135deg,var(--coral-xl),#FFCDD2);border-left:4px solid var(--coral);}
+.rule-card.purple{background:linear-gradient(135deg,var(--purple-xl),#E1BEE7);border-left:4px solid var(--purple);}
+.rule-card.amber{background:linear-gradient(135deg,var(--amber-xl),#FFE0B2);border-left:4px solid var(--amber);}
+.rule-icon{font-size:22px;flex-shrink:0;}
+/* DRAG MATCH */
+.match-row{display:grid;grid-template-columns:1fr 20px 1fr;gap:8px;align-items:center;margin-bottom:8px;}
+.match-item{background:var(--white);border:2px solid var(--border);border-radius:var(--r-sm);padding:10px;font-size:13px;font-weight:700;text-align:center;cursor:pointer;transition:all 0.2s;min-height:44px;display:flex;align-items:center;justify-content:center;}
+.match-item.selected{border-color:var(--blue);background:var(--blue-xl);transform:scale(1.04);}
+.match-item.correct{border-color:var(--green);background:var(--green-xl);cursor:default;}
+.match-item.wrong-flash{animation:shake 0.4s;border-color:var(--coral);}
+.match-arrow{font-size:18px;text-align:center;color:var(--muted);}
+/* PATTERN TABLE */
+.ptable{width:100%;border-collapse:collapse;border-radius:var(--r-sm);overflow:hidden;}
+.ptable th{background:var(--dark);color:#fff;padding:8px 6px;font-size:12px;font-weight:800;}
+.ptable td{padding:10px 6px;font-size:13px;font-weight:700;text-align:center;border-bottom:1px solid var(--border);}
+.ptable tr.pre-row td{background:var(--coral-xl);}
+.ptable tr.discover-row td{background:var(--green-xl);}
+.ptable tr.locked td{background:#f5f5f5;color:var(--muted);}
+.ptable tr.unlocked td{background:var(--green-xl);animation:popIn 0.3s;}
+/* GAME */
+.game-canvas{position:relative;flex:1;overflow:hidden;background:linear-gradient(180deg,#1a1a2e 0%,#16213e 100%);}
+.falling-expr{position:absolute;background:var(--white);border:2px solid var(--border);border-radius:12px;padding:8px 14px;font-size:16px;font-weight:800;cursor:pointer;user-select:none;transition:box-shadow 0.15s,transform 0.15s;box-shadow:var(--shadow-sm);}
+.falling-expr.selected{border-color:var(--gold);background:var(--gold-xl);box-shadow:0 0 16px rgba(249,168,37,0.5);transform:scale(1.08);}
+.game-bins{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px;background:rgba(255,255,255,0.05);}
+.game-bin{border-radius:var(--r);padding:16px 10px;text-align:center;cursor:pointer;transition:transform 0.15s;border:2px solid rgba(255,255,255,0.2);}
+.game-bin:active{transform:scale(0.97);}
+.game-bin.pos{background:rgba(46,125,50,0.8);}
+.game-bin.neg{background:rgba(198,40,40,0.8);}
+.game-bin-symbol{font-size:36px;font-weight:900;color:#fff;}
+.game-bin-label{font-size:12px;font-weight:700;color:rgba(255,255,255,0.8);}
+.timer-bar{height:6px;background:rgba(255,255,255,0.15);border-radius:3px;margin:8px 12px;}
+.timer-fill{height:100%;background:var(--gold);border-radius:3px;transition:width 0.1s linear;}
+.game-score{font-size:20px;font-weight:900;color:var(--gold);text-align:center;padding:4px;}
+/* SUMMARY SIGNPOSTS */
+.signpost{border-radius:var(--r);padding:14px;margin-bottom:10px;cursor:pointer;transition:transform 0.2s;display:flex;gap:12px;align-items:center;}
+.signpost:hover{transform:scale(1.02);}
+.signpost-icon{font-size:28px;flex-shrink:0;}
+.signpost-content{flex:1;}
+.signpost-title{font-size:13px;font-weight:800;margin-bottom:2px;}
+.signpost-sub{font-size:12px;font-weight:600;opacity:0.8;}
+/* JUMP BUTTON */
+.jump-btn-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.jump-btn{flex:1;background:var(--white);border:2px solid var(--green);border-radius:var(--r-sm);padding:9px 4px;font-size:12px;font-weight:800;color:var(--green);cursor:pointer;min-height:44px;transition:all 0.15s;}
+.jump-btn:disabled{opacity:0.3;cursor:not-allowed;}
+.jump-btn.done{background:var(--green);color:#fff;}
+/* MCQ */
+.mcq-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+.mcq-opt{background:var(--white);border:2px solid var(--border);border-radius:var(--r-sm);padding:12px;font-size:16px;font-weight:800;text-align:center;cursor:pointer;min-height:48px;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+.mcq-opt:hover{border-color:var(--blue);background:var(--blue-xl);}
+.mcq-opt.selected.correct{border-color:var(--green);background:var(--green-xl);color:var(--green-dark);}
+.mcq-opt.selected.wrong{border-color:var(--coral);background:var(--coral-xl);animation:shake 0.4s;}
+/* SIGN BUTTONS (screen 11) */
+.sign-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0;}
+.sign-btn{padding:18px;border-radius:var(--r);border:none;font-size:28px;font-weight:900;cursor:pointer;transition:all 0.15s;}
+.sign-btn.pos{background:var(--green-xl);color:var(--green-dark);}
+.sign-btn.neg{background:var(--coral-xl);color:var(--coral);}
+.sign-btn:hover{transform:scale(1.04);}
+.sign-btn.chosen{transform:scale(1.06);}
+/* CASE COLUMNS (screen 10) */
+.case-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.case-col{border-radius:var(--r);overflow:hidden;cursor:pointer;transition:transform 0.2s;}
+.case-col:hover{transform:scale(1.04);}
+.case-col-header{padding:10px 4px;text-align:center;font-size:11px;font-weight:800;color:#fff;}
+.case-col-body{padding:10px 6px;font-size:11px;font-weight:700;color:var(--dark);background:var(--white);}
+.case-col-rule{font-size:16px;font-weight:900;margin:4px 0;}
+/* CONFETTI */
+.confetti-piece{position:absolute;width:8px;height:8px;border-radius:2px;animation:confettiFall 1.2s ease forwards;}
+/* DROPDOWN */
+select.expr-select{border:2px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;font-family:var(--font);font-size:14px;font-weight:700;width:100%;outline:none;cursor:pointer;background:var(--white);}
+/* SECTION LABEL */
+.section-label{font-size:10px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+/* BIG RULE */
+.big-rule{font-size:22px;font-weight:900;text-align:center;padding:16px;border-radius:var(--r-lg);margin:10px 0;}
+/* BOTTOM ACTION */
+.bottom-bar{padding:12px 16px;background:var(--white);border-top:1px solid var(--border);flex-shrink:0;}
+/* SCROLL REVEAL */
+.parchment{background:linear-gradient(135deg,#FFF8DC,#FAEBD7);border-radius:var(--r);border:2px solid #D4A017;padding:4px;overflow:hidden;}
+/* HINT CHIP */
+.hint-chip{display:inline-flex;align-items:center;gap:4px;background:var(--amber-xl);border:1.5px solid #FFCC80;border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--amber);cursor:pointer;margin-top:8px;}
+/* PROGRESS BAR */
+.progress-bar{height:5px;background:var(--border);border-radius:3px;margin:6px 0;}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--green),var(--green-l));transition:width 0.5s ease;}
+/* ANIMATIONS */
+@keyframes popIn{from{opacity:0;transform:scale(0.7);}to{opacity:1;transform:scale(1);}}
+@keyframes bounce{0%,100%{transform:translateY(0);}40%{transform:translateY(-12px);}70%{transform:translateY(-5px);}}
+@keyframes shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-6px);}40%,80%{transform:translateX(6px);}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(46,125,50,0.4);}50%{box-shadow:0 0 0 8px rgba(46,125,50,0);}}
+@keyframes starPop{0%{transform:scale(0);}70%{transform:scale(1.3);}100%{transform:scale(1);}}
+@keyframes confettiFall{0%{opacity:1;transform:translateY(0) rotate(0deg);}100%{opacity:0;transform:translateY(300px) rotate(720deg);}}
+@keyframes arcDraw{from{stroke-dashoffset:200;}to{stroke-dashoffset:0;}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(249,168,37,0.4);}50%{box-shadow:0 0 0 8px rgba(249,168,37,0);}}
+@keyframes scrollUnroll{from{max-height:0;opacity:0;}to{max-height:600px;opacity:1;}}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.animate-fadeIn{animation:fadeIn 0.4s ease forwards;}
+.animate-slideUp{animation:slideUp 0.4s ease forwards;}
+/* GAME STAR RATING */
+.star-rating{display:flex;justify-content:center;gap:10px;font-size:48px;margin:12px 0;}
+/* GLOBAL TITLE */
+.screen-title{font-size:18px;font-weight:900;color:var(--dark);margin-bottom:4px;}
+.screen-subtitle{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:12px;}
+/* BANNER */
+.banner{padding:10px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:800;margin-bottom:10px;text-align:center;}
+.banner.green{background:var(--green);color:#fff;}
+.banner.coral{background:var(--coral);color:#fff;}
+.banner.purple{background:var(--purple);color:#fff;}
+.banner.amber{background:var(--amber);color:#fff;}
+/* PROOF BANNER */
+.proof-banner{background:linear-gradient(135deg,var(--purple),var(--purple-l));color:#fff;border-radius:var(--r);padding:16px;text-align:center;font-size:16px;font-weight:900;margin:10px 0;animation:popIn 0.5s ease;}
+/* VO STRIP */
+.vo-strip{background:rgba(0,0,0,0.05);border-radius:var(--r-sm);padding:8px 12px;font-size:11px;font-weight:600;color:var(--mid);font-style:italic;margin-top:8px;border-left:3px solid var(--border);}
+/* SCORE BADGE */
+.score-badge{display:flex;align-items:center;gap:3px;background:var(--gold-xl);border:1.5px solid var(--gold);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:800;color:var(--amber);}
+/* MINI NL */
+.mini-nl{margin:8px 0;background:var(--white);border-radius:var(--r-sm);padding:14px 8px 8px;border:1.5px solid var(--border);}
+</style>
 </head>
 <body>
-<div class="container">
-
-<div class="screen active">
-<div class="header">Welcome</div>
-<p>Multiplication of Integers Module</p>
-<div class="nav"><button disabled>Prev</button><button onclick="next()">Next</button></div>
+<div id="app">
+<div class="device" id="device">
+  <div id="toast" class="toast"></div>
+  <!-- Screens rendered by JS -->
 </div>
-
-<div class="screen">
-<div class="header">Concept</div>
-<p>Multiplication = Repeated Addition</p>
-<div class="nav"><button onclick="prev()">Prev</button><button onclick="next()">Next</button></div>
 </div>
-
-<div class="screen">
-<div class="header">Practice</div>
-<p>5 × 3 = ?</p>
-<input id="q"><button onclick="check()">Check</button>
-<p id="r"></p>
-<div class="nav"><button onclick="prev()">Prev</button><button onclick="next()">Next</button></div>
-</div>
-
-<div class="screen">
-<div class="header">Summary</div>
-<p>Same signs → Positive | Different → Negative</p>
-<div class="nav"><button onclick="prev()">Prev</button><button disabled>End</button></div>
-</div>
-
-</div>
-
 <script>
-let i=0;let s=document.querySelectorAll('.screen');
-function show(x){s.forEach(e=>e.classList.remove('active'));s[x].classList.add('active')}
-function next(){if(i<s.length-1){i++;show(i)}}
-function prev(){if(i>0){i--;show(i)}}
-function check(){r.innerText = q.value==15?"Correct":"Try again"}
-</script>
+// ─── STATE ────────────────────────────────────────────────────────
+const state = {
+  screen: 0,
+  s1: { dialogIdx: 0 },
+  s3: { q1Input:'', q1Done:false, q2Stars:0, matchLeft:null, matchDone:[], stars:0 },
+  s5: { jumps:0, q2Input:'', q2Attempts:0, stars:0 },
+  s7: { jumps:0, q2Input:'', q2Attempts:0, bonusMCQ:'', stars:0 },
+  s8: { rows:[null,null,null], rowInputs:['','',''], attempts:[0,0,0], done:[] },
+  s9: { q1a:'', q1b:'', q2:'', q3expr:'', q3val:'', q1Done:false, stars:0 },
+  s11: { curQ:0, sign:null, val:'', attempts:0, results:[], done:false },
+  s12: { round:1, score:0, selected:null, timer:30, expressions:[], falling:[], done:false, roundResults:[] },
+};
 
+// ─── HELPERS ─────────────────────────────────────────────────────
+const device = document.getElementById('device');
+
+function showToast(msg, type='green-toast', dur=2000){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast '+type+' show';
+  setTimeout(()=>t.className='toast', dur);
+}
+
+function fireConfetti(container){
+  const colors = ['#4CAF50','#EF5350','#AB47BC','#F9A825','#42A5F5','#FFCA28'];
+  for(let i=0;i<30;i++){
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*30+30}%;background:${colors[i%colors.length]};animation-delay:${Math.random()*0.5}s;animation-duration:${0.8+Math.random()*0.8}s;`;
+    container.appendChild(el);
+    setTimeout(()=>el.remove(), 1800);
+  }
+}
+
+function svg(attrs, children){
+  const el = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));
+  if(children) el.innerHTML = children;
+  return el;
+}
+
+// ─── NUMBER LINE SVG BUILDER ──────────────────────────────────────
+function buildNumberLine({min,max,arcs=[],color='#2E7D32',labels=true,landingAt=null,showStart=true}){
+  const W=340, PL=20, PR=20, H=80;
+  const range = max-min;
+  const scaleX = v => PL + (v-min)/(range)*(W-PL-PR);
+  let inner = '';
+  // baseline
+  inner += `<line x1="${PL}" y1="55" x2="${W-PR}" y2="55" stroke="#424242" stroke-width="2" stroke-linecap="round"/>`;
+  // ticks & labels
+  for(let i=min;i<=max;i+=(range<=20?1:2)){
+    const x=scaleX(i);
+    inner += `<line x1="${x}" y1="50" x2="${x}" y2="60" stroke="#424242" stroke-width="1.5"/>`;
+    if(labels) inner += `<text x="${x}" y="74" font-size="9" font-weight="700" fill="#757575" text-anchor="middle" font-family="Nunito,sans-serif">${i}</text>`;
+  }
+  // arcs (bracket style above line)
+  arcs.forEach((a,i)=>{
+    const x1=scaleX(a.from), x2=scaleX(a.to);
+    const mid=(x1+x2)/2;
+    const aH=28+i*4;
+    inner += `<path d="M${x1},55 L${x1},${55-aH} L${x2},${55-aH} L${x2},55" fill="none" stroke="${a.color||color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" ${a.animated?`stroke-dasharray="200" stroke-dashoffset="200" style="animation:arcDraw 0.5s ${a.delay||0}s ease forwards;"`:''}/>`;
+    inner += `<text x="${mid}" y="${55-aH-5}" font-size="10" font-weight="800" fill="${a.color||color}" text-anchor="middle" font-family="Nunito,sans-serif">${a.label}</text>`;
+  });
+  if(showStart){
+    const sx=scaleX(min>0?min:0);
+    inner += `<text x="${sx}" y="42" font-size="9" fill="#2E7D32" font-weight="800" text-anchor="middle" font-family="Nunito,sans-serif">START</text>`;
+  }
+  if(landingAt!==null){
+    const lx=scaleX(landingAt);
+    inner += `<circle cx="${lx}" cy="55" r="8" fill="${color}" opacity="0.9"/>`;
+    inner += `<text x="${lx}" y="58" font-size="9" fill="#fff" font-weight="900" text-anchor="middle" font-family="Nunito,sans-serif">${landingAt}</text>`;
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="overflow:visible">${inner}</svg>`;
+}
+
+// ─── SCREEN REGISTRY ─────────────────────────────────────────────
+const screens = [s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13];
+const screenTitles = [
+  "Story Hook","Recall — Multiplication","Quick Practice","Case 1 — (+)×(+)=(+)",
+  "Case 1 Practice","Case 2 — (−)×(+)=(−)","Case 2 Practice","Case 3 — (−)×(−)=(+)!",
+  "Case 3 Practice","All Three Cases","Mixed Practice","Sign Sorter Game","Summary & Conclusion"
+];
+
+function navigate(idx){
+  state.screen = idx;
+  render();
+}
+
+function render(){
+  // clear old screens
+  document.querySelectorAll('.screen').forEach(s=>s.remove());
+  screens[state.screen]();
+}
+
+function addScreen(el){ device.appendChild(el); }
+
+function makeScreen(id){
+  const s = document.createElement('div');
+  s.className = 'screen';
+  s.id = id;
+  return s;
+}
+
+function makeNav(title, badge, showBack=true){
+  const nav = document.createElement('div');
+  nav.className = 'nav';
+  nav.innerHTML = `
+    ${showBack&&state.screen>0?`<button class="btn btn-secondary btn-sm" style="padding:6px 12px;font-size:11px" onclick="navigate(${state.screen-1})">← Back</button>`:'<div style="width:60px"></div>'}
+    <div class="nav-title">${title}</div>
+    <div class="nav-badge">${badge}</div>`;
+  return nav;
+}
+
+function makeProgressBar(current, total){
+  const d = document.createElement('div');
+  d.style.padding = '4px 16px 0';
+  d.innerHTML = `<div class="progress-bar"><div class="progress-fill" style="width:${(current/total*100).toFixed(0)}%"></div></div>
+  <div style="font-size:10px;font-weight:700;color:var(--muted);text-align:right;padding-right:2px">${current}/${total}</div>`;
+  return d;
+}
+
+// ─── SCREEN 1: STORY HOOK ────────────────────────────────────────
+function s1(){
+  const sc = makeScreen('sc1');
+  sc.appendChild(makeNav('Ria & Arjun','S1 · Concrete'));
+  sc.appendChild(makeProgressBar(1,13));
+
+  const body = document.createElement('div');
+  body.className = 'scroll-area';
+  body.innerHTML = `
+    <div class="char-row" style="margin-bottom:8px;">
+      <div class="char">
+        <div class="char-body char-ria">😊</div>
+        <div class="char-label">Ria</div>
+        <div class="char-badge" style="color:var(--green-dark);border-color:#A5D6A7;">+</div>
+      </div>
+      <div style="font-size:28px;font-weight:900;color:var(--muted);">VS</div>
+      <div class="char">
+        <div class="char-body char-arjun">😕</div>
+        <div class="char-label">Arjun</div>
+        <div class="char-badge" style="color:var(--blue);border-color:#90CAF9;">?</div>
+      </div>
+    </div>
+    <div class="card" style="background:linear-gradient(135deg,#E8F5E9,#E3F2FD);border:none;margin-bottom:8px;">
+      <div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">SCENE: Park bench, after school</div>
+      <div style="font-size:12px;color:var(--mid);">Arjun is puzzled about his homework. It says <strong style="color:var(--purple);">(−3)×(−4)=?</strong></div>
+    </div>
+    <div class="bubble-container" id="bubbles"></div>
+    <div style="height:80px"></div>`;
+  sc.appendChild(body);
+
+  const btmBar = document.createElement('div');
+  btmBar.className = 'bottom-bar';
+  btmBar.innerHTML = `<div id="prog-dots" class="prog-dots" style="margin-bottom:8px;"></div><button id="next-btn" class="btn btn-primary btn-pulse">Next →</button>`;
+  sc.appendChild(btmBar);
+
+  addScreen(sc);
+
+  const dialogs = [
+    {who:'arjun', text:'Ria, I am stuck on homework. It says (−3) × (−4). How do you even multiply two negative numbers?'},
+    {who:'ria', text:'Great question! But first — do you remember what multiplication actually means?'},
+    {who:'arjun', text:'Just... multiplying two numbers?'},
+    {who:'ria', text:'There is more to it! Multiplication is repeated addition. Let me show you with a simple example first!'},
+  ];
+  const vo = [
+    '"Arjun: Ria, main homework mein stuck hoon. Ismein likha hai (−3)×(−4). Do negative numbers multiply kaise hote hain?"',
+    '"Ria: Acha sawal! Lekin pehle — multiplication ka matlab kya hota hai, yaad hai?"',
+    '"Arjun: Bas... do numbers multiply karna?"',
+    '"Ria: Isse zyada hai! Multiplication matlab baar baar jodna. Pehle main ek simple example se dikhati hoon!"',
+  ];
+
+  let idx = state.s1.dialogIdx;
+
+  function renderBubbles(){
+    const bc = document.getElementById('bubbles');
+    bc.innerHTML = '';
+    for(let i=0;i<=idx;i++){
+      const d = dialogs[i];
+      const wrap = document.createElement('div');
+      wrap.style.display='flex';
+      wrap.style.flexDirection='column';
+      wrap.style.alignItems=d.who==='ria'?'flex-end':'flex-start';
+      wrap.innerHTML = `
+        <div class="bubble-name" style="padding:0 14px;color:${d.who==='ria'?'var(--green)':'var(--blue)'};">${d.who==='ria'?'Ria':'Arjun'}</div>
+        <div class="bubble ${d.who}">${d.text}</div>`;
+      bc.appendChild(wrap);
+    }
+    if(idx < dialogs.length-1){
+      const voEl = document.createElement('div');
+      voEl.className='vo-strip';
+      voEl.textContent = vo[idx];
+      bc.appendChild(voEl);
+    }
+    // update dots
+    const dots = document.getElementById('prog-dots');
+    if(dots) dots.innerHTML = dialogs.map((_,i)=>`<div class="dot ${i<=idx?'active':''}"></div>`).join('');
+    // update button
+    const btn = document.getElementById('next-btn');
+    if(btn){
+      if(idx >= dialogs.length-1){
+        btn.textContent = "Let's Begin! →";
+        btn.classList.remove('btn-pulse');
+        btn.onclick = ()=>navigate(1);
+      } else {
+        btn.textContent = 'Next →';
+        btn.onclick = ()=>{ idx++; state.s1.dialogIdx=idx; renderBubbles(); };
+      }
+    }
+    // auto scroll
+    setTimeout(()=>{ body.scrollTop = body.scrollHeight; },100);
+  }
+
+  document.getElementById('next-btn').onclick = ()=>{ idx++; state.s1.dialogIdx=idx; renderBubbles(); };
+  renderBubbles();
+
+  // auto-pulse prompt if idle
+  let idleTimer = setTimeout(()=>{
+    const b=document.getElementById('next-btn');
+    if(b)b.classList.add('btn-pulse');
+  },8000);
+}
+
+// ─── SCREEN 2: RECALL ────────────────────────────────────────────
+function s2(){
+  const sc = makeScreen('sc2');
+  sc.appendChild(makeNav('Multiplication = Repeated +','S2 · Concept'));
+  sc.appendChild(makeProgressBar(2,13));
+
+  const body = document.createElement('div');
+  body.className = 'scroll-area';
+  body.innerHTML = `
+    <div class="screen-title">Multiplication = Repeated Addition</div>
+    <div class="screen-subtitle">Ria explains at the chalkboard 📋</div>
+    <div class="rule-card amber">
+      <div class="rule-icon">💡</div>
+      <div><strong>a × b</strong> means: add b, exactly a times. That is it!</div>
+    </div>
+    <div class="card" id="ex1-card">
+      <div class="section-label">Example 1</div>
+      <div style="font-size:20px;font-weight:900;color:var(--green);text-align:center;margin:6px 0;">3 × 4 = 4 + 4 + 4 = 12</div>
+      <div class="mini-nl" id="nl1"></div>
+      <div style="font-size:12px;color:var(--mid);text-align:center;margin-top:6px;">3 groups of 4 coins 🪙🪙🪙🪙 × 3 = 12</div>
+      <div class="vo-strip">"Ria: 3 × 4 ka matlab hai hum 4 ko teen baar jodte hain!"</div>
+    </div>
+    <div class="card hidden" id="ex2-card" style="opacity:0;transition:opacity 0.4s;">
+      <div class="section-label">Example 2</div>
+      <div style="font-size:20px;font-weight:900;color:var(--green);text-align:center;margin:6px 0;">2 × 5 = 5 + 5 = 10</div>
+      <div class="mini-nl" id="nl2"></div>
+      <div class="vo-strip">"Arjun: Oh! Multiplication sirf baar baar addition likhne ka shortcut hai?"</div>
+    </div>
+    <div class="card coral animate-slideUp" id="teaser-card" style="margin-top:8px;">
+      <div class="rule-icon" style="font-size:20px;">🤔</div>
+      <div style="font-size:13px;font-weight:700;color:var(--coral);margin-top:4px;">Ria: "Now — what if the number we are adding is <em>negative</em>? That is where integers come in!"</div>
+    </div>
+    <div style="height:70px"></div>`;
+  sc.appendChild(body);
+
+  // Number lines
+  document.getElementById('nl1').innerHTML = buildNumberLine({
+    min:0,max:13,arcs:[
+      {from:0,to:4,label:'+4',animated:true,delay:0},
+      {from:4,to:8,label:'+4',animated:true,delay:0.5},
+      {from:8,to:12,label:'+4',animated:true,delay:1},
+    ],landingAt:12,showStart:false
+  });
+  document.getElementById('nl2').innerHTML = buildNumberLine({
+    min:0,max:11,arcs:[
+      {from:0,to:5,label:'+5',animated:true,delay:0},
+      {from:5,to:10,label:'+5',animated:true,delay:0.5},
+    ],landingAt:10,showStart:false
+  });
+
+  let ex2Shown = false;
+
+  const btmBar = document.createElement('div');
+  btmBar.className = 'bottom-bar';
+  btmBar.id = 'btm2';
+  btmBar.innerHTML = `<button id="btn-ex2" class="btn btn-secondary" style="width:100%;margin-bottom:8px;">Show Example 2</button><button class="btn btn-primary" onclick="navigate(2)">I understand →</button>`;
+  sc.appendChild(btmBar);
+  addScreen(sc);
+
+  document.getElementById('btn-ex2').onclick = ()=>{
+    if(!ex2Shown){
+      ex2Shown=true;
+      const c = document.getElementById('ex2-card');
+      c.classList.remove('hidden');
+      c.style.opacity='1';
+      document.getElementById('btn-ex2').style.display='none';
+    }
+  };
+}
+
+// ─── SCREEN 3: RECALL PRACTICE ───────────────────────────────────
+function s3(){
+  const sc = makeScreen('sc3');
+  sc.appendChild(makeNav('Quick Practice','S3 · Practice'));
+  sc.appendChild(makeProgressBar(3,13));
+
+  const st = state.s3;
+  let matchSelected = null;
+  const matchLeft = ['2×6','4×2','3×5'];
+  const matchRight = ['6+6','2+2+2+2','5+5+5'];
+  const matchAnswers = {0:0, 1:1, 2:2}; // left[i] → right[matchAnswers[i]]
+
+  const body = document.createElement('div');
+  body.className = 'scroll-area';
+  sc.appendChild(body);
+
+  const btmBar = document.createElement('div');
+  btmBar.className = 'bottom-bar';
+  sc.appendChild(btmBar);
+  addScreen(sc);
+
+  function renderS3(){
+    body.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div><div class="screen-title">Quick Practice</div><div class="screen-subtitle">Arjun steps up to the chalkboard!</div></div>
+        <div class="score-badge"><span>⭐</span><span>${st.stars}/2</span></div>
+      </div>
+      <div class="card">
+        <div class="section-label">Q1 — Fill in the blank</div>
+        <div style="font-size:16px;font-weight:800;text-align:center;margin:8px 0;color:var(--dark);">5 × 3 = 3+3+3+3+3 = <span style="color:var(--green);">___</span></div>
+        <div style="display:flex;gap:8px;">
+          <input type="number" id="q1-input" class="input-box ${st.q1Done?'correct':''}" style="flex:1;" placeholder="?" value="${st.q1Done?15:st.q1Input}" ${st.q1Done?'disabled':''}>
+          ${st.q1Done?'<div style="font-size:22px;align-self:center;">✅</div>':`<button class="btn btn-primary" style="flex:0;padding:12px 16px;width:auto;" onclick="checkQ1()">Check</button>`}
+        </div>
+        ${!st.q1Done&&st.q1Hint?`<div class="hint-chip">💡 ${st.q1Hint}</div>`:''}
+        <div class="mini-nl" id="mini-nl-s3"></div>
+      </div>
+      <div class="card" style="margin-top:8px;">
+        <div class="section-label">Q2 — Drag & Match</div>
+        <div style="font-size:12px;color:var(--mid);margin-bottom:8px;">Tap left, then tap right to match!</div>
+        ${matchLeft.map((l,i)=>`
+          <div class="match-row">
+            <div class="match-item ${st.q2Done&&st.q2Done[i]?'correct':''} ${matchSelected===i?'selected':''}" 
+              id="ml-${i}" onclick="selectLeft(${i})" 
+              style="${st.q2Done&&st.q2Done[i]?'cursor:default;':''}">
+              ${l}
+            </div>
+            <div class="match-arrow">${st.q2Done&&st.q2Done[i]?'✅':'→'}</div>
+            <div class="match-item ${st.q2Done&&st.q2Done[i]?'correct':''}" 
+              id="mr-${i}" onclick="selectRight(${i})">
+              ${matchRight[i]}
+            </div>
+          </div>`).join('')}
+      </div>
+      <div style="height:70px"></div>`;
+
+    // mini number line shows on correct
+    if(st.q1Done){
+      document.getElementById('mini-nl-s3').innerHTML = buildNumberLine({
+        min:0,max:16,arcs:[
+          {from:0,to:3,label:'+3',animated:true,delay:0},
+          {from:3,to:6,label:'+3',animated:true,delay:0.3},
+          {from:6,to:9,label:'+3',animated:true,delay:0.6},
+          {from:9,to:12,label:'+3',animated:true,delay:0.9},
+          {from:12,to:15,label:'+3',animated:true,delay:1.2},
+        ],landingAt:15,showStart:false
+      });
+    }
+
+    // bottom bar
+    const allDone = st.stars >= 2;
+    btmBar.innerHTML = allDone ? `<button class="btn btn-primary" onclick="navigate(3)">Continue → Case 1</button>` : '';
+  }
+
+  window.checkQ1 = ()=>{
+    const v = parseInt(document.getElementById('q1-input').value);
+    if(v===15){
+      st.q1Done=true; st.stars=Math.max(st.stars,1);
+      showToast('Correct! ✓ 5 arcs of 3 = 15 🎉','green-toast');
+      renderS3();
+    } else {
+      const inp = document.getElementById('q1-input');
+      inp.classList.add('wrong');
+      setTimeout(()=>inp.classList.remove('wrong'),500);
+      const hints=['How many 3s are being added? Count once more.','Scaffold: 3, 6, 9, 12, ___ ?'];
+      st.q1Hints = (st.q1Hints||0)+1;
+      st.q1Hint = hints[Math.min(st.q1Hints-1, hints.length-1)];
+      if(st.q1Hints>=3){ st.q1Done=true; st.stars=Math.max(st.stars,1); showToast('Auto answer: 15 ✓','green-toast'); }
+      renderS3();
+    }
+  };
+
+  window.selectLeft = (i)=>{
+    if(st.q2Done&&st.q2Done[i]) return;
+    matchSelected = i;
+    renderS3();
+  };
+  window.selectRight = (r)=>{
+    if(matchSelected===null) return;
+    const i = matchSelected;
+    if(!st.q2Done) st.q2Done = {};
+    if(matchAnswers[i]===r){
+      st.q2Done[i]=true;
+      matchSelected=null;
+      if(Object.keys(st.q2Done).length===3){
+        st.stars=2;
+        showToast('All matched! ✓ 🎉','green-toast');
+        setTimeout(()=>fireConfetti(sc), 200);
+        btmBar.innerHTML = `<button class="btn btn-primary" onclick="navigate(3)">Continue → Case 1</button>`;
+      } else {
+        showToast('Correct match! ✅','green-toast');
+      }
+    } else {
+      showToast('Try again! How many times is it added?','red-toast');
+      const el = document.getElementById(`mr-${r}`);
+      if(el){el.classList.add('wrong-flash');setTimeout(()=>el.classList.remove('wrong-flash'),500);}
+    }
+    renderS3();
+  };
+
+  renderS3();
+}
+
+// ─── SCREEN 4: CASE 1 EXPLAIN ────────────────────────────────────
+function s4(){
+  const sc = makeScreen('sc4');
+  sc.appendChild(makeNav('Case 1 — Positive × Positive','S4 · Case 1'));
+  sc.appendChild(makeProgressBar(4,13));
+
+  const body = document.createElement('div');
+  body.className = 'scroll-area';
+  sc.appendChild(body);
+  const btmBar = document.createElement('div');
+  btmBar.className = 'bottom-bar';
+  sc.appendChild(btmBar);
+  addScreen(sc);
+
+  let jumps = 0;
+  const maxJumps = 3;
+
+  function renderS4(){
+    const arcData = [
+      {from:0,to:4,label:'+4',animated:true,delay:0},
+      {from:4,to:8,label:'+4',animated:true,delay:0},
+      {from:8,to:12,label:'+4',animated:true,delay:0},
+    ].slice(0, jumps);
+
+    body.innerHTML = `
+      <div class="banner green">📖 CASE 1: (+) × (+) = (+)</div>
+      <div class="card green">
+        <div class="section-label">Story</div>
+        <div style="font-size:14px;font-weight:700;color:var(--green-dark);">Arjun earns ₹4 each day by helping at home. He works for <strong>3 days</strong>. How much does he earn in total?</div>
+        <div class="vo-strip">"Ria: Arjun roz ₹4 kamata hai, 3 din tak. Yeh hai 3 groups of +4."</div>
+      </div>
+      <div class="card">
+        <div class="section-label">Number Line — Draw the Jumps!</div>
+        <div style="text-align:center;font-size:13px;font-weight:700;color:var(--mid);margin-bottom:8px;">Running total: <strong style="color:var(--green);font-size:18px;">+${jumps*4}</strong></div>
+        <div id="nl-s4"></div>
+        <div class="jump-btn-row">
+          ${[1,2,3].map(j=>`<button class="jump-btn ${jumps>=j?'done':''}" ${jumps<j-1?'disabled':''} onclick="doJump(${j})">Jump ${j} ${jumps>=j?'✓':''}</button>`).join('')}
+        </div>
+      </div>
+      ${jumps===3?`
+      <div class="card" style="animation:popIn 0.4s ease;margin-top:8px;">
+        <div style="font-size:15px;font-weight:900;text-align:center;color:var(--dark);margin-bottom:6px;">3 × 4 = 4 + 4 + 4 = <span style="color:var(--green);font-size:20px;">12</span></div>
+        <div style="font-size:13px;text-align:center;color:var(--mid);">Arjun earned ₹12 total! 🎉</div>
+      </div>
+      <div class="rule-card green" style="animation:slideUp 0.4s ease;">
+        <div class="rule-icon">✅</div>
+        <div><strong>(+) × (+) = (+)</strong><br><span style="font-weight:600;font-size:12px;">Positive groups of positive amounts = Positive total!</span></div>
+      </div>`:''}
+      <div style="height:70px"></div>`;
+
+    document.getElementById('nl-s4').innerHTML = buildNumberLine({
+      min:0, max:13,
+      arcs: arcData,
+      landingAt: jumps===3?12:null,
+      showStart:false
+    });
+
+    btmBar.innerHTML = jumps===3
+      ? `<button class="btn btn-primary" onclick="navigate(4)">Continue → Practice</button>`
+      : `<button class="btn btn-secondary" style="width:100%" onclick="doJump(${jumps+1})">Draw Jump ${jumps+1} →</button>`;
+  }
+
+  window.doJump = (j)=>{
+    if(j === jumps+1){ jumps=j; renderS4(); }
+  };
+  renderS4();
+}
+
+// ─── SCREEN 5: CASE 1 PRACTICE ───────────────────────────────────
+function s5(){
+  const sc = makeScreen('sc5');
+  sc.appendChild(makeNav('Case 1 Practice','S5 · Practice'));
+  sc.appendChild(makeProgressBar(5,13));
+
+  const st = state.s5;
+  let jumps = st.jumps||0;
+
+  const body = document.createElement('div');
+  body.className = 'scroll-area';
+  sc.appendChild(body);
+  const btmBar = document.createElement('div');
+  btmBar.className = 'bottom-bar';
+  sc.appendChild(btmBar);
+  addScreen(sc);
+
+  function renderS5(){
+    const q1Done = jumps>=4;
+    const arcData = Array.from({length:Math.min(jumps,4)},(_,i)=>({from:i*3,to:(i+1)*3,label:'+3',animated:false}));
+
+    body.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div><div class="screen-title">Case 1 Practice</div><div class="screen-subtitle">Arjun at the chalkboard</div></div>
+        <div class="score-badge">⭐ ${st.stars}/2</div>
+      </div>
+      <div class="banner green">CASE 1: (+) × (+) = (+)</div>
+      <div class="card">
+        <div class="section-label">Q1 — Find 4 × 3 using the number line</div>
+        <div style="font-size:13px;color:var(--mid);margin-bottom:8px;">Drag / tap the jump block to mark each group of 3.</div>
+        <div id="nl-s5"></div>
+        <div class="jump-btn-row">
+          ${[1,2,3,4].map(j=>`<button class="jump-btn ${jumps>=j?'done':''}" ${jumps<j-1?'disabled':''} onclick="doJump5(${j})">+3 ${jumps>=j?'✓':''}</button>`).join('')}
+        </div>
+        ${q1Done?`<div style="color:var(--green);font-weight:800;font-size:14px;text-align:center;margin-top:8px;">4 × 3 = 12 ✓ ⭐</div>`:''}
+      </div>
+      <div class="card" style="margin-top:8px;">
+        <div class="section-label">Q2 — Find 6 × 5</div>
+        <div style="font-size:13px;color:var(--mid);margin-bottom:8px;">Both signs are positive. What is the sign of the answer?</div>
+        <div style="display:flex;gap:8px;">
+          <input type="number" id="q2-s5" class="input-box ${st.stars>=2?'correct':''}" placeholder="?" ${st.stars>=2?'disabled value="30"':''}>
+          ${st.stars<2?`<button class="btn btn-primary" style="flex:0;padding:12px 16px;width:auto;" onclick="checkQ2S5()">Check</button>`:'<div style="font-size:22px;align-self:center;">✅</div>'}
+        </div>
+        ${st.q2Hint?`<div class="hint-chip">💡 ${st.q2Hint}</div>`:''}
+      </div>
+      <div style="height:70px"></div>`;
+
+    document.getElementById('nl-s5').innerHTML = buildNumberLine({
+      min:0,max:13,arcs:arcData,landingAt:jumps>=4?12:null,showStart:false
+    });
+
+    btmBar.innerHTML = st.stars>=2
+      ? `<button class="btn btn-primary" onclick="navigate(5)">Continue → Case 2 🎉</button>`
+      : '';
+  }
+
+  window.doJump5 = (j)=>{
+    if(j===jumps+1){ jumps=j; state.s5.jumps=jumps; if(jumps>=4) state.s5.stars=Math.max(state.s5.stars,1); renderS5(); }
+  };
+
+  window.checkQ2S5 = ()=>{
+    const v = parseInt(document.getElementById('q2-s5').value);
+    if(v===30){
+      state.s5.stars=2; showToast('Correct! Case 1 clear! 🎉','green-toast');
+      setTimeout(()=>fireConfetti(sc),200);
+      renderS5();
+    } else {
+      state.s5.q2Attempts=(state.s5.q2Attempts||0)+1;
+      const hints=['Sign check: both positive → answer positive. Now calculate 6 × 5.','Scaffold: 6 groups of 5 = 5+5+5+5+5+5 = ___','Auto: 6×5=30'];
+      state.s5.q2Hint = hints[Math.min(state.s5.q2Attempts-1, 2)];
+      if(state.s5.q2Attempts>=3){ state.s5.stars=2; showToast('Answer: 30 ✓','green-toast'); }
+      const inp=document.getElementById('q2-s5');
+      inp.classList.add('wrong');setTimeout(()=>inp.classList.remove('wrong'),500);
+      renderS5();
+    }
+  };
+  renderS5();
+}
+
+// ─── SCREEN 6: CASE 2 EXPLAIN ────────────────────────────────────
+function s6(){
+  const sc = makeScreen('sc6');
+  sc.appendChild(makeNav('Case 2 — Negative × Positive','S6 · Case 2'));
+  sc.appendChild(makeProgressBar(6,13));
+
+  const body = document.createElement('div');
+  body.className = 'scroll-area';
+  sc.appendChild(body);
+  const btmBar = document.createElement('div');
+  btmBar.className = 'bottom-bar';
+  sc.appendChild(btmBar);
+  addScreen(sc);
+
+  let jumps = 0;
+
+  function renderS6(){
+    const arcData = Array.from({length:jumps},(_,i)=>({from:-i*3,to:-(i+1)*3,label:'−3',animated:false,color:'#C62828'}));
+
+    body.innerHTML = `
+      <div class="banner coral">📖 CASE 2: (+)×(−)=(−) and (−)×(+)=(−)</div>
+      <div class="card coral">
+        <div class="section-label">Story</div>
+        <div style="font-size:14px;font-weight:700;color:var(--coral);">Arjun pays ₹3 to the canteen every day for <strong>4 days</strong>. He is losing money. How much does he lose in total?</div>
+        <div class="vo-strip">"Ria: Arjun roz ₹3 khota hai, 4 din tak. Yeh hai 4 groups of (−3). Har roz baayi taraf jaata hai!"</div>
+      </div>
+      <div class="card">
+        <div class="section-label">Number Line — Going LEFT! ←</div>
+        <div style="text-align:center;font-size:13px;font-weight:700;color:var(--mid);margin-bottom:8px;">Running total: <strong style="color:var(--coral);font-size:18px;">${jumps*-3}</strong></div>
+        <div id="nl-s6"></div>
+        <div class="jump-btn-row">
+          ${[1,2,3,4].map(j=>`<button class="jump-btn ${jumps>=j?'done':''}${jumps>=j?';background:var(--coral);color:#fff':''}" style="${jumps>=j?'background:var(--coral);color:#fff;':''}" ${jumps<j-1?'disabled':''} onclick="doJump6(${j})">−3 ${jumps>=j?'✓':''}</button>`).join('')}
+        </div>
+      </div>
+      ${jumps===4?`
+      <div class="card" style="animation:popIn 0.4s ease;">
+        <div style="font-size:14px;font-weight:900;text-align:center;color:var(--dark);">4 × (−3) = (−3)+(−3)+(−3)+(−3) = <span style="color:var(--coral);font-size:20px;">−12</span></div>
+        <div style="text-align:center;font-size:12px;color:var(--mid);margin-top:4px;">Arjun lost ₹12. The answer is NEGATIVE! 😟</div>
+      </div>
+      <div class="rule-card coral" style="animation:slideUp 0.3s ease;">
+        <div class="rule-icon">❌</div>
+        <div><strong>(+) × (−) = (−)</strong><br><span style="font-size:12px;">Positive groups of negative amounts = Negative!</span></div>
+      </div>
+      <div class="rule-card purple" style="animation:slideUp 0.5s ease;">
+        <div class="rule-icon">🔄</div>
+        <div><strong>(−) × (+) = (−) too!</strong><br><span style="font-size:12px;">Multiplication is commutative — order does not change the sign!</span></div>
+      </div>`:''}
+      <div style="height:70px"></div>`;
+
+    document.getElementById('nl-s6').innerHTML = buildNumberLine({
+      min:-13, max:1,
+      arcs: arcData,
+      color:'#C62828',
+      landingAt: jumps===4?-12:null,
+      showStart:false
+    });
+
+    btmBar.innerHTML = jumps===4
+      ? `<button class="btn btn-coral" onclick="navigate(6)">Continue → Practice</button>`
+      : `<button class="btn btn-secondary" style="width:100%;border-color:var(--coral);color:var(--coral);" onclick="doJump6(${jumps+1})">Draw Jump ${jumps+1} ←</button>`;
+  }
+
+  window.doJump6 = (j)=>{ if(j===jumps+1){jumps=j;renderS6();} };
+  renderS6();
+}
+
+// ─── SCREEN 7: CASE 2 PRACTICE ───────────────────────────────────
+function s7(){
+  const sc = makeScreen('sc7');
+  sc.appendChild(makeNav('Case 2 Practice','S7 · Practice'));
+  sc.appendChild(makeProgressBar(7,13));
+
+  const st = state.s7;
+  let jumps = st.jumps||0;
+
+  const body = document.createElement('div');
+  body.className = 'scroll-area';
+  sc.appendChild(body);
+  const btmBar = document.createElement('div');
+  btmBar.className = 'bottom-bar';
+  sc.appendChild(btmBar);
+  addScreen(sc);
+
+  function renderS7(){
+    const q1Done = jumps>=3;
+    const arcData = Array.from({length:Math.min(jumps,3)},(_,i)=>({from:-i*4,to:-(i+1)*4,label:'−4',animated:false,color:'#C62828'}));
+
+    body.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div class="screen-title">Case 2 Practice</div>
+        <div class="score-badge">⭐ ${st.stars}/3</div>
+      </div>
+      <div class="banner coral">CASE 2: (+)×(−)=(−) and (−)×(+)=(−)</div>
+      <div class="card">
+        <div class="section-label">Q1 — Find 3 × (−4) using the number line</div>
+        <div style="font-size:12px;color:var(--mid);margin-bottom:6px;">Move LEFT this time! ←</div>
+        <div id="nl-s7"></div>
+        <div class="jump-btn-row">
+          ${[1,2,3].map(j=>`<button class="jump-btn" style="${jumps>=j?'background:var(--coral);color:#fff;border-color:var(--coral);':''}" ${jumps<j-1?'disabled':''} onclick="doJump7(${j})">−4 ${jumps>=j?'✓':''}</button>`).join('')}
+        </div>
+        ${q1Done?`<div style="color:var(--coral);font-weight:800;text-align:center;margin-top:8px;">3×(−4) = −12 ✓ ⭐</div>`:''}
+      </div>
+      <div class="card" style="margin-top:8px;">
+        <div class="section-label">Q2 — Find (−2) × 7</div>
+        <div style="display:flex;gap:8px;">
+          <input type="number" id="q2-s7" class="input-box ${st.stars>=2?'correct':''}" placeholder="?" ${st.stars>=2?'disabled value="-14"':''}>
+          ${st.stars<2?`<button class="btn btn-coral" style="flex:0;padding:12px 16px;width:auto;" onclick="checkQ2S7()">Check</button>`:'<div style="font-size:22px;align-self:center;">✅</div>'}
+        </div>
+        ${st.q2Hint?`<div class="hint-chip">💡 ${st.q2Hint}</div>`:''}
+      </div>
+      <div class="card" style="margin-top:8px;">
+        <div class="section-label">Bonus Q — Commutativity</div>
+        <div style="font-size:14px;font-weight:800;margin-bottom:8px;">If 3 × (−5) = −15, then (−5) × 3 = ?</div>
+        <div class="mcq-grid">
+          ${['+15','−15','+5','−5'].map(o=>`<div class="mcq-opt ${st.bonusDone?(o==='−15'?'selected correct':''):(st.bonusSel===o?(o==='−15'?'selected correct':'selected wrong'):'')}" onclick="checkBonus('${o}')">${o}</div>`).join('')}
+        </div>
+        ${st.bonusHint?`<div class="hint-chip">💡 ${st.bonusHint}</div>`:''}
+      </div>
+      <div style="height:70px"></div>`;
+
+    document.getElementById('nl-s7').innerHTML = buildNumberLine({
+      min:-13, max:1, arcs:arcData, color:'#C62828',
+      landingAt:jumps>=3?-12:null, showStart:false
+    });
+
+    btmBar.innerHTML = st.stars>=3
+      ? `<button class="btn btn-primary" onclick="navigate(7)">Continue → Case 3 🎉</button>`:'';
+  }
+
+  window.doJump7 = (j)=>{ if(j===jumps+1){jumps=j;state.s7.jumps=j;if(jumps>=3){state.s7.stars=Math.max(state.s7.stars,1);}renderS7();} };
+
+  window.checkQ2S7 = ()=>{
+    const v=parseInt(document.getElementById('q2-s7').value);
+    if(v===-14){ state.s7.stars=Math.max(state.s7.stars,2); showToast('Correct! −14 ✓','green-toast'); renderS7(); }
+    else{
+      state.s7.q2Att=(state.s7.q2Att||0)+1;
+      const hints=['Sign check: negative, positive → different signs → answer ___?','Scaffold: 2×7=14. Now apply sign: −14'];
+      state.s7.q2Hint=hints[Math.min(state.s7.q2Att-1,1)];
+      if(state.s7.q2Att>=3){state.s7.stars=Math.max(state.s7.stars,2);showToast('Answer: −14 ✓','green-toast');}
+      renderS7();
+    }
+  };
+
+  window.checkBonus = (opt)=>{
+    if(state.s7.bonusDone) return;
+    state.s7.bonusSel=opt;
+    if(opt==='−15'){ state.s7.stars=3;state.s7.bonusDone=true; showToast('Correct! Commutativity ✓ 🎉','green-toast'); fireConfetti(sc); renderS7(); }
+    else{ state.s7.bonusHint="Ria: Multiplication commutative hai — 3×(−5) aur (−5)×3 same hoga!"; renderS7(); }
+  };
+  renderS7();
+}
+
+// ─── SCREEN 8: CASE 3 EXPLAIN ────────────────────────────────────
+function s8(){
+  const sc = makeScreen('sc8');
+  sc.appendChild(makeNav('Case 3 — The Big Discovery!','S8 · Case 3'));
+  sc.appendChild(makeProgressBar(8,13));
+
+  const st = state.s8;
+
+  const body = document.createElement('div');
+  body.className = 'scroll-area';
+  sc.appendChild(body);
+  const btmBar = document.createElement('div');
+  btmBar.className = 'bottom-bar';
+  sc.appendChild(btmBar);
+  addScreen(sc);
+
+  const preRows = [
+    ['3×(−3)', '−9', '#FFEBEE'],
+    ['2×(−3)', '−6', '#FFEBEE'],
+    ['1×(−3)', '−3', '#FFEBEE'],
+    ['0×(−3)', '0', '#F5F5F5'],
+  ];
+  const discoverRows = [
+    {expr:'(−1)×(−3)', expected:3, idx:0},
+    {expr:'(−2)×(−3)', expected:6, idx:1},
+    {expr:'(−3)×(−3)', expected:9, idx:2},
+  ];
+
+  function renderS8(){
+    const allDone = st.done.length===3;
+
+    body.innerHTML = `
+      <div class="banner purple">🔮 CASE 3 — THE BIG DISCOVERY!</div>
+      <div class="card purple" style="margin-bottom:8px;">
+        <div class="section-label">Story</div>
+        <div style="font-size:13px;font-weight:700;color:var(--purple);">The shopkeeper removes a ₹3 charge from Arjun's bill every day for 4 days. Removing a negative = SAVING money! How much does Arjun save?</div>
+      </div>
+      <div class="parchment" style="margin-bottom:10px;">
+        <div style="padding:10px;">
+          <div style="font-size:12px;font-weight:900;color:#8B6914;margin-bottom:8px;text-align:center;">📜 MAGIC PATTERN SCROLL</div>
+          <div style="font-size:11px;font-weight:700;color:var(--muted);text-align:right;margin-bottom:4px;">Products ↑ by +3 each step</div>
+          <table class="ptable" style="border-radius:8px;overflow:hidden;">
+            <tr><th>Expression</th><th>Product</th><th>Sign</th></tr>
+            ${preRows.map(([e,p,bg])=>`<tr class="pre-row"><td style="background:${bg}">${e}</td><td style="background:${bg}">${p}</td><td style="background:${bg}">${parseInt(p)>0?'+':(parseInt(p)<0?'−':'0')}</td></tr>`).join('')}
+            ${discoverRows.map(r=>{
+              const done = st.done.includes(r.idx);
+              const isNext = !done && st.done.length===r.idx;
+              return `<tr class="${done?'unlocked':'locked'}"><td>${r.expr}</td>
+                <td style="${done?`color:var(--green);font-size:16px`:'color:var(--muted);'}">${done?`+${r.expected}`:'?'}</td>
+                <td>${done?'<span style="color:var(--green);font-size:14px">+</span>':'🔒'}</td></tr>`;
+            }).join('')}
+          </table>
+        </div>
+      </div>
+      ${!allDone?`
+      <div class="card" id="predict-card">
+        <div class="section-label">Predict the next product!</div>
+        <div style="font-size:15px;font-weight:800;margin-bottom:8px;color:var(--dark);">${discoverRows[st.done.length].expr} = ?</div>
+        <div style="display:flex;gap:8px;">
+          <input type="number" id="predict-inp" class="input-box" placeholder="+?">
+          <button class="btn btn-purple" style="width:auto;padding:12px 16px;" onclick="checkPredict()">Unlock 🔓</button>
+        </div>
+        ${st.hints&&st.hints[st.done.length]?`<div class="hint-chip">💡 ${st.hints[st.done.length]}</div>`:''}
+      </div>`:''}
+      ${allDone?`
+      <div class="proof-banner">🎉 PROOF COMPLETE!</div>
+      <div class="rule-card purple" style="animation:popIn 0.5s ease;border:2px solid var(--gold);">
+        <div class="rule-icon">🏆</div>
+        <div><strong>(−) × (−) = (+)</strong><br><span style="font-size:12px;">Two negatives cancel — the result is Positive!</span><br><span style="font-size:11px;color:var(--mid);">Shopkeeper removes ₹3 for 4 days = (−4)×(−3) = +12 saved!</span></div>
+      </div>
+      <div class="card" style="background:linear-gradient(135deg,#FFF8E1,#FFF3E0);border-color:#FFE082;margin-top:8px;">
+        <div style="font-size:13px;font-weight:700;color:var(--amber);">Arjun: "Removing a negative is like adding a positive! It makes total sense now!"</div>
+        <div class="vo-strip">"Arjun: Negative hatana, positive jodne jaisa hai! Ab bilkul samajh aaya!"</div>
+      </div>`:''}
+      <div style="height:70px"></div>`;
+
+    btmBar.innerHTML = allDone
+      ? `<button class="btn btn-purple" onclick="navigate(8)">Continue → Practice Case 3</button>`
+      : `<div style="font-size:12px;font-weight:600;color:var(--mid);text-align:center;">Predict and unlock each row to reveal the pattern!</div>`;
+  }
+
+  window.checkPredict = ()=>{
+    const ridx = st.done.length;
+    const v = parseInt(document.getElementById('predict-inp').value);
+    const expected = discoverRows[ridx].expected;
+    if(v===expected){
+      st.done.push(ridx);
+      const el=document.getElementById('predict-inp');
+      if(el){el.classList.add('correct');}
+      showToast('Golden! Pattern holds! 🌟','green-toast');
+      if(st.done.length===3) setTimeout(()=>fireConfetti(sc),300);
+      renderS8();
+    } else {
+      st.hints = st.hints||{};
+      st.attempts = st.attempts||{};
+      st.attempts[ridx]=(st.attempts[ridx]||0)+1;
+      const hints=[
+        'Is the product increasing or decreasing? ↑',
+        `Scaffold: previous product + 3 = ?`,
+        `Auto answer: +${expected}`,
+      ];
+      st.hints[ridx]=hints[Math.min(st.attempts[ridx]-1,2)];
+      if(st.attempts[ridx]>=3){ st.done.push(ridx); showToast(`Answer: +${expected} ✓`,'green-toast'); }
+      const inp=document.getElementById('predict-inp');
+      if(inp){inp.classList.add('wrong');setTimeout(()=>inp.classList.remove('wrong'),500);}
+      renderS8();
+    }
+  };
+  renderS8();
+}
+
+// ─── SCREEN 9: CASE 3 PRACTICE ───────────────────────────────────
+function s9(){
+  const sc = makeScreen('sc9');
+  sc.appendChild(makeNav('Case 3 Practice','S9 · Practice'));
+  sc.appendChild(makeProgressBar(9,13));
+
+  const st = state.s9;
+  const body = document.createElement('div');
+  body.className='scroll-area';
+  sc.appendChild(body);
+  const btmBar=document.createElement('div');
+  btmBar.className='bottom-bar';
+  sc.appendChild(btmBar);
+  addScreen(sc);
+
+  function renderS9(){
+    body.innerHTML=`
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div class="screen-title">Case 3 Practice</div>
+        <div class="score-badge">⭐ ${st.stars}/3</div>
+      </div>
+      <div class="banner purple">CASE 3: (−) × (−) = (+)</div>
+      <div class="card">
+        <div class="section-label">Q1 — Pattern Table (fill in blanks)</div>
+        <table class="ptable" style="margin-bottom:8px;">
+          <tr><th>Expression</th><th>Product</th></tr>
+          <tr class="pre-row"><td>2×(−5)</td><td>−10</td></tr>
+          <tr class="pre-row"><td>1×(−5)</td><td>−5</td></tr>
+          <tr class="pre-row"><td>0×(−5)</td><td>0</td></tr>
+          <tr class="${st.q1Done?'unlocked':'locked'}"><td>(−1)×(−5)</td><td>${st.q1Done?'+5':'<input type="number" id="q1a-inp" class="input-box" style="width:70px;font-size:14px;padding:6px;" placeholder="?">'}${!st.q1Done&&st.stars<1?'':(st.q1Done?'':'')} </td></tr>
+          <tr class="${st.q1Done?'unlocked':'locked'}"><td>(−2)×(−5)</td><td>${st.q1Done?'+10':'?'}</td></tr>
+        </table>
+        ${!st.q1Done?`<button class="btn btn-purple" style="width:auto;padding:10px 20px;" onclick="checkQ1S9()">Submit</button>`:'<div style="color:var(--green);font-weight:800;">Pattern works! ✓ ⭐</div>'}
+      </div>
+      <div class="card" style="margin-top:8px;">
+        <div class="section-label">Q2 — Find (−6) × (−4)</div>
+        <div style="font-size:12px;color:var(--mid);margin-bottom:6px;">Hint: Both negative. Same signs → answer is ___?</div>
+        <div style="display:flex;gap:8px;">
+          <input type="number" id="q2-s9" class="input-box ${st.stars>=2?'correct':''}" placeholder="?" ${st.stars>=2?'value="24" disabled':''}>
+          ${st.stars<2?`<button class="btn btn-purple" style="width:auto;padding:12px 16px;" onclick="checkQ2S9()">Check</button>`:'<div style="font-size:22px;align-self:center;">✅</div>'}
+        </div>
+        ${st.q2Hint?`<div class="hint-chip">💡 ${st.q2Hint}</div>`:''}
+      </div>
+      <div class="card" style="margin-top:8px;">
+        <div class="section-label">Q3 — Temperature Story</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--dark);">The temperature drops 2°C every hour. Going back 3 hours — what is the change?</div>
+        <div style="margin-bottom:8px;">
+          <div class="section-label" style="margin-bottom:4px;">Choose the expression:</div>
+          <select class="expr-select" id="q3-expr" onchange="state.s9.q3expr=this.value">
+            <option value="">Select...</option>
+            <option value="a">(−3)×(−2)</option>
+            <option value="b">3×2</option>
+            <option value="c">(−3)×2</option>
+            <option value="d">3×(−2)</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <input type="number" id="q3-val" class="input-box ${st.stars>=3?'correct':''}" placeholder="Answer?" ${st.stars>=3?'value="6" disabled':''}>
+          ${st.stars<3?`<button class="btn btn-purple" style="width:auto;padding:12px 16px;" onclick="checkQ3S9()">Check</button>`:'<div style="font-size:22px;align-self:center;">✅</div>'}
+        </div>
+        ${st.q3Hint?`<div class="hint-chip">💡 ${st.q3Hint}</div>`:''}
+      </div>
+      <div style="height:70px"></div>`;
+
+    btmBar.innerHTML=st.stars>=3
+      ?`<button class="btn btn-primary" onclick="navigate(9)">Continue → All Cases! 🎉</button>`:'';
+  }
+
+  window.checkQ1S9=()=>{
+    const v=parseInt(document.getElementById('q1a-inp').value);
+    if(v===5){ st.q1Done=true;st.stars=Math.max(st.stars,1); showToast('Pattern works! ✓ ⭐','green-toast'); renderS9(); }
+    else{ showToast('Look at the pattern — what comes after 0? +5, then +10','red-toast'); renderS9(); }
+  };
+  window.checkQ2S9=()=>{
+    const v=parseInt(document.getElementById('q2-s9').value);
+    if(v===24){ st.stars=Math.max(st.stars,2); showToast('Correct! +24 ✓','green-toast'); renderS9(); }
+    else{
+      st.q2Att=(st.q2Att||0)+1;
+      const h=['Both are negative — same signs — answer is positive. Now 6×4.','Step 1: Same signs → +. Step 2: 6×4=___'];
+      st.q2Hint=h[Math.min(st.q2Att-1,1)];
+      if(st.q2Att>=3){st.stars=Math.max(st.stars,2);showToast('Answer: 24 ✓','green-toast');}
+      renderS9();
+    }
+  };
+  window.checkQ3S9=()=>{
+    const expr=document.getElementById('q3-expr').value;
+    const v=parseInt(document.getElementById('q3-val').value);
+    if(expr==='a'&&v===6){ st.stars=3; showToast('Correct! (−3)×(−2)=+6 ✓ 🎉','green-toast'); fireConfetti(sc); renderS9(); }
+    else if(expr!=='a'){ st.q3Hint='Going backwards = negative time. Temperature dropping = negative change.'; renderS9(); }
+    else{ st.q3Hint='Correct expression! Now calculate (−3)×(−2) = +?'; renderS9(); }
+  };
+  renderS9();
+}
+
+// ─── SCREEN 10: ALL THREE CASES ──────────────────────────────────
+function s10(){
+  const sc = makeScreen('sc10');
+  sc.appendChild(makeNav('All Three Cases','S10 · Recap'));
+  sc.appendChild(makeProgressBar(10,13));
+
+  const body = document.createElement('div');
+  body.className='scroll-area';
+
+  const cases=[
+    {num:1,color:'green',header:'CASE 1',rule:'(+)×(+)=(+)',eg:'3×4=+12',thumb:'→→→',story:"Arjun earns ₹4/day × 3 days",expanded:false},
+    {num:2,color:'coral',header:'CASE 2',rule:'(±)×(∓)=(−)',eg:'4×(−3)=−12',thumb:'←←←←',story:"Arjun loses ₹3/day × 4 days",expanded:false},
+    {num:3,color:'purple',header:'CASE 3 ★',rule:'(−)×(−)=(+)',eg:'(−2)×(−3)=+6',thumb:'🏆',story:"Shopkeeper removes −₹3 × 4",expanded:false},
+  ];
+  let expanded=-1;
+
+  function renderS10(){
+    body.innerHTML=`
+      <div class="screen-title">The Complete Rule Card</div>
+      <div class="screen-subtitle">Tap any case to see the full example!</div>
+      <div class="case-cols" style="margin-bottom:12px;">
+        ${cases.map((c,i)=>`
+          <div class="case-col" onclick="expandCase(${i})">
+            <div class="case-col-header" style="background:var(--${c.color});">${c.header}</div>
+            <div class="case-col-body">
+              <div class="case-col-rule" style="color:var(--${c.color});">${c.rule}</div>
+              <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">${c.eg}</div>
+              <div style="font-size:20px;">${c.thumb}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+      ${expanded>=0?`
+      <div class="card animate-fadeIn" style="border-color:var(--${cases[expanded].color});border-width:2px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div class="screen-title" style="color:var(--${cases[expanded].color});">${cases[expanded].header}</div>
+          <button class="btn btn-secondary btn-sm" onclick="expandCase(-1)">Got it ✓</button>
+        </div>
+        <div style="font-size:22px;font-weight:900;color:var(--${cases[expanded].color});text-align:center;margin:8px 0;">${cases[expanded].rule}</div>
+        <div style="font-size:14px;font-weight:700;text-align:center;color:var(--dark);">e.g. ${cases[expanded].eg}</div>
+        <div style="font-size:12px;color:var(--mid);text-align:center;margin-top:4px;font-style:italic;">${cases[expanded].story}</div>
+        <div class="mini-nl" id="case-nl"></div>
+      </div>`:''}
+      <div class="big-rule" style="background:linear-gradient(135deg,var(--amber-xl),var(--gold-xl));border:2px solid var(--gold);">
+        <div style="font-size:12px;font-weight:900;letter-spacing:1px;color:var(--amber);margin-bottom:4px;">THE ONE RULE</div>
+        <div style="color:var(--green-dark);">Same signs → <strong>Positive (+)</strong></div>
+        <div style="color:var(--coral);">Different signs → <strong>Negative (−)</strong></div>
+      </div>
+      <div class="card blue" style="margin-top:8px;">
+        <div style="font-size:13px;font-weight:700;color:var(--blue);">Arjun: "I check the signs first, then multiply. Got it!"</div>
+        <div class="vo-strip">"Arjun: Main pehle signs check karta hoon, phir multiply. Samajh gaya!"</div>
+      </div>
+      <div style="height:70px"></div>`;
+
+    if(expanded>=0){
+      const c=cases[expanded];
+      const nlMap={
+        0:{min:0,max:13,arcs:[{from:0,to:4,label:'+4'},{from:4,to:8,label:'+4'},{from:8,to:12,label:'+4'}],col:'#2E7D32',land:12},
+        1:{min:-13,max:1,arcs:[{from:0,to:-3,label:'−3',color:'#C62828'},{from:-3,to:-6,label:'−3',color:'#C62828'},{from:-6,to:-9,label:'−3',color:'#C62828'},{from:-9,to:-12,label:'−3',color:'#C62828'}],col:'#C62828',land:-12},
+        2:{min:-4,max:10,arcs:[{from:-2,to:0,label:'+?',color:'#6A1B9A'},{from:0,to:6,label:'+6',color:'#6A1B9A'}],col:'#6A1B9A',land:6},
+      };
+      const nl=nlMap[expanded];
+      document.getElementById('case-nl').innerHTML=buildNumberLine({min:nl.min,max:nl.max,arcs:nl.arcs,color:nl.col,landingAt:nl.land,showStart:false});
+    }
+
+    btmBar.innerHTML=`<button class="btn btn-primary" onclick="navigate(10)">Ready for Mixed Practice! →</button>`;
+  }
+
+  window.expandCase=(i)=>{ expanded=i; renderS10(); };
+
+  sc.appendChild(body);
+  const btmBar=document.createElement('div');
+  btmBar.className='bottom-bar';
+  sc.appendChild(btmBar);
+  addScreen(sc);
+  renderS10();
+}
+
+// ─── SCREEN 11: MIXED PRACTICE ───────────────────────────────────
+function s11(){
+  const sc=makeScreen('sc11');
+  sc.appendChild(makeNav('Mixed Practice','S11 · Mixed'));
+  sc.appendChild(makeProgressBar(11,13));
+
+  const questions=[
+    {expr:'5 × 3',sign:'+',val:15,case_:1},
+    {expr:'(−3) × 8',sign:'−',val:24,case_:2},
+    {expr:'(−4) × (−6)',sign:'+',val:24,case_:3},
+    {expr:'7 × (−2)',sign:'−',val:14,case_:2},
+    {expr:'(−9) × (−3)',sign:'+',val:27,case_:3},
+  ];
+
+  const st=state.s11;
+  const body=document.createElement('div');
+  body.className='scroll-area';
+  sc.appendChild(body);
+  const btmBar=document.createElement('div');
+  btmBar.className='bottom-bar';
+  sc.appendChild(btmBar);
+  addScreen(sc);
+
+  function renderS11(){
+    if(st.done){
+      // Results screen
+      body.innerHTML=`
+        <div class="screen-title">Results! 🎉</div>
+        <div style="margin-bottom:12px;">
+          ${questions.map((q,i)=>{
+            const r=st.results[i];
+            return `<div class="card" style="margin-bottom:6px;display:flex;align-items:center;gap:10px;">
+              <div style="font-size:20px;">${r?'✅':'❌'}</div>
+              <div><div style="font-weight:800;font-size:14px;">${q.expr}</div>
+              <div style="font-size:12px;color:var(--muted);">= ${q.sign}${q.val} | Case ${q.case_}</div></div>
+            </div>`;
+          }).join('')}
+        </div>
+        ${st.results.every(r=>r)?`<div class="proof-banner">PERFECT SCORE! Arjun ne kiya! 🏆</div>`:''}
+        <div style="height:70px"></div>`;
+      btmBar.innerHTML=`<button class="btn btn-primary" onclick="navigate(11)">Continue → Sign Sorter Game! 🎮</button>`;
+      return;
+    }
+
+    const q=questions[st.curQ];
+    const pct=((st.curQ)/questions.length*100).toFixed(0);
+
+    body.innerHTML=`
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="screen-title">Mixed Practice</div>
+        <div class="score-badge">Q ${st.curQ+1}/5</div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="card" style="text-align:center;margin:12px 0;padding:24px;">
+        <div style="font-size:11px;font-weight:800;letter-spacing:1px;color:var(--muted);margin-bottom:8px;">FIND THE ANSWER</div>
+        <div style="font-size:36px;font-weight:900;color:var(--dark);">${q.expr}</div>
+      </div>
+      <div>
+        <div class="section-label">Step 1 — What is the SIGN?</div>
+        <div class="sign-btns">
+          <button class="sign-btn pos ${st.signPicked==='+'?'chosen':''}" onclick="pickSign('+')">+ Positive</button>
+          <button class="sign-btn neg ${st.signPicked==='-'?'chosen':''}" onclick="pickSign('-')">− Negative</button>
+        </div>
+      </div>
+      ${st.signCorrect!==null?`
+      <div>
+        <div class="section-label">Step 2 — What is the VALUE?</div>
+        <div style="display:flex;gap:8px;margin-top:6px;">
+          <input type="number" id="val-inp" class="input-box" placeholder="number only (no sign)">
+          <button class="btn btn-primary" style="width:auto;padding:12px 16px;" onclick="checkVal()">Check</button>
+        </div>
+        ${st.valHint?`<div class="hint-chip">💡 ${st.valHint}</div>`:''}
+      </div>`:''}
+      ${st.hintMsg?`<div class="rule-card amber" style="margin-top:8px;"><div class="rule-icon">💡</div><div>${st.hintMsg}</div></div>`:''}
+      <div class="card blue" style="margin-top:8px;">
+        <div style="font-size:12px;font-weight:700;color:var(--blue);">Ria's tip: Always check signs FIRST using The One Rule. Then multiply!</div>
+        <div class="vo-strip">"Ria: Pehle HAMESHA signs check karo — The One Rule se. Phir numbers multiply karo!"</div>
+      </div>
+      <div style="height:70px"></div>`;
+
+    btmBar.innerHTML='';
+  }
+
+  window.pickSign=(s)=>{
+    const q=questions[st.curQ];
+    st.signPicked=s;
+    if(s===q.sign){
+      st.signCorrect=true; st.hintMsg=null;
+      showToast('Sign correct! ✓ Now find the value.','green-toast');
+    } else {
+      st.signCorrect=false; st.attempts=(st.attempts||0)+1;
+      st.hintMsg=`Mini reminder: Same signs → (+) | Different signs → (−)`;
+      showToast('Check the signs again!','red-toast');
+    }
+    renderS11();
+  };
+
+  window.checkVal=()=>{
+    const q=questions[st.curQ];
+    const v=parseInt(document.getElementById('val-inp').value);
+    if(v===q.val){
+      st.results[st.curQ]=true;
+      showToast('Correct! ✓ ⭐','green-toast');
+      st.curQ++; st.signPicked=null; st.signCorrect=null; st.valHint=null; st.hintMsg=null; st.attempts=0;
+      if(st.curQ>=questions.length){ st.done=true; fireConfetti(sc); }
+      renderS11();
+    } else {
+      st.valAtt=(st.valAtt||0)+1;
+      const hints=['Sign correct! Now just multiply — ignore sign for now.','Relevant case: check case card for hint.','Auto-demo: compute without sign then add.'];
+      st.valHint=hints[Math.min(st.valAtt-1,2)];
+      if(st.valAtt>=3){ st.results[st.curQ]=false; st.curQ++; st.signPicked=null;st.signCorrect=null;st.valHint=null;st.hintMsg=null;st.valAtt=0; if(st.curQ>=questions.length){st.done=true;} showToast(`Answer was ${q.sign}${q.val}`,'red-toast'); }
+      renderS11();
+    }
+  };
+
+  // Init results array
+  if(!st.results) st.results=[];
+  renderS11();
+}
+
+// ─── SCREEN 12: SIGN SORTER GAME ─────────────────────────────────
+function s12(){
+  const sc=makeScreen('sc12');
+  sc.appendChild(makeNav('Sign Sorter Game 🎮','S12 · Game'));
+  sc.appendChild(makeProgressBar(12,13));
+
+  const st=state.s12;
+
+  const gameZone=document.createElement('div');
+  gameZone.style.cssText='flex:1;display:flex;flex-direction:column;overflow:hidden;background:linear-gradient(180deg,#1a1a2e,#16213e);position:relative;';
+  sc.appendChild(gameZone);
+  addScreen(sc);
+
+  const allExprs=[
+    {e:'(−3)×(−5)',sign:'+',pts:10},{e:'4×7',sign:'+',pts:10},{e:'(−2)×8',sign:'−',pts:10},
+    {e:'(−1)×(−9)',sign:'+',pts:10},{e:'6×(−3)',sign:'−',pts:10},{e:'(−5)×(−4)',sign:'+',pts:10},
+    {e:'9×3',sign:'+',pts:10},{e:'(−2)×(−2)',sign:'+',pts:10},{e:'5×(−6)',sign:'−',pts:10},
+    {e:'(−7)×(−1)',sign:'+',pts:10},{e:'3×(−4)',sign:'−',pts:10},{e:'(−8)×2',sign:'−',pts:10},
+  ];
+
+  let round=1, score=0, selected=null, timer=30, timerInterval=null, falling=[], wrongCount=0;
+  let roundActive=false;
+
+  function getRoundExprs(r){
+    const counts=[5,7,9];
+    return allExprs.slice(0,counts[r-1]).sort(()=>Math.random()-0.5);
+  }
+
+  function showIntro(){
+    gameZone.innerHTML=`
+      <div style="padding:20px;text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div style="font-size:40px;margin-bottom:12px;">🎯</div>
+        <div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:8px;">Sign Sorter Game!</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:20px;">Tap an expression, then tap the correct bin!<br>Round ${round}/3 — ${[5,7,9][round-1]} expressions</div>
+        <div style="font-size:24px;font-weight:900;color:var(--gold);margin-bottom:16px;">Score: ${score}</div>
+        <button class="btn" style="background:var(--gold);color:#1a1a2e;padding:16px 32px;font-size:16px;font-weight:900;border-radius:20px;" onclick="startRound()">
+          ${round===1?'Start Game!':'Round '+round+' — Go!'} 🚀
+        </button>
+        ${round>1?`<div class="star-rating">${score>=80?'⭐⭐⭐':score>=40?'⭐⭐':'⭐'}</div>`:''}
+      </div>`;
+  }
+
+  window.startRound=()=>{
+    roundActive=true; selected=null; wrongCount=0;
+    falling=getRoundExprs(round).map((ex,i)=>({
+      ...ex, id:i, x:Math.random()*240+10, y:-60-i*70, dy:0.7+(round-1)*0.4,
+      selected:false, gone:false
+    }));
+    timer=30;
+    gameZone.innerHTML='';
+    buildGameUI();
+    timerInterval=setInterval(gameLoop,50);
+  };
+
+  function buildGameUI(){
+    gameZone.innerHTML=`
+      <div style="padding:8px 12px 4px;display:flex;justify-content:space-between;align-items:center;">
+        <div style="color:var(--gold);font-size:14px;font-weight:900;">Round ${round}/3</div>
+        <div style="color:rgba(255,255,255,0.9);font-size:14px;font-weight:900;">Score: <span id="g-score">${score}</span></div>
+        <div style="color:#EF5350;font-size:14px;font-weight:900;">⏱ <span id="g-timer">${timer}s</span></div>
+      </div>
+      <div class="timer-bar"><div class="timer-fill" id="timer-fill" style="width:100%"></div></div>
+      <div id="game-canvas" style="flex:1;position:relative;overflow:hidden;"></div>
+      <div class="game-bins">
+        <div class="game-bin pos" onclick="sortBin('+')">
+          <div class="game-bin-symbol">+</div>
+          <div class="game-bin-label">Positive</div>
+        </div>
+        <div class="game-bin neg" onclick="sortBin('-')">
+          <div class="game-bin-symbol">−</div>
+          <div class="game-bin-label">Negative</div>
+        </div>
+      </div>`;
+  }
+
+  function gameLoop(){
+    if(!roundActive) return;
+    timer-=50/1000;
+    if(timer<=0){ endRound(); return; }
+    const tf=document.getElementById('timer-fill');
+    const gt=document.getElementById('g-timer');
+    if(tf) tf.style.width=(timer/30*100)+'%';
+    if(gt) gt.textContent=Math.ceil(timer)+'s';
+
+    const canvas=document.getElementById('game-canvas');
+    if(!canvas) return;
+
+    // Update positions
+    falling.forEach(f=>{ if(!f.gone) f.y+=f.dy; });
+    falling=falling.filter(f=>{ if(f.gone) return false; if(f.y>480){f.gone=true;} return !f.gone; });
+
+    // All sorted?
+    if(falling.length===0){ endRound(); return; }
+
+    // Render
+    canvas.innerHTML='';
+    falling.forEach(f=>{
+      const el=document.createElement('div');
+      el.className='falling-expr'+(f.selected?' selected':'');
+      el.style.cssText=`left:${f.x}px;top:${f.y}px;`;
+      el.textContent=f.e;
+      el.onclick=()=>selectExpr(f.id);
+      canvas.appendChild(el);
+    });
+  }
+
+  window.selectExpr=(id)=>{
+    falling.forEach(f=>f.selected=(f.id===id));
+    selected=id;
+  };
+
+  window.sortBin=(bin)=>{
+    if(selected===null){ showToast('Tap an expression first!','red-toast',1000); return; }
+    const f=falling.find(f=>f.id===selected);
+    if(!f) return;
+    if(f.sign===bin){
+      score+=10;
+      f.gone=true; selected=null; wrongCount=0;
+      const gs=document.getElementById('g-score');
+      if(gs) gs.textContent=score;
+    } else {
+      score=Math.max(0,score-5);
+      wrongCount++;
+      const gs=document.getElementById('g-score');
+      if(gs) gs.textContent=score;
+      falling.forEach(f2=>f2.selected=false);
+      selected=null;
+      if(wrongCount>=3){
+        // Timeout — show mini rule
+        clearInterval(timerInterval); roundActive=false;
+        const c=document.getElementById('game-canvas');
+        if(c) c.innerHTML=`<div style="padding:20px;text-align:center;color:#fff;font-size:14px;font-weight:700;">
+          ⏸ Quick reminder:<br><strong style="color:var(--gold);">Same signs → (+)<br>Different signs → (−)</strong>
+          <br><button class="btn" style="margin-top:12px;background:var(--gold);color:#1a1a2e;padding:10px 24px;border-radius:12px;font-weight:800;" onclick="resumeGame()">Resume</button></div>`;
+        setTimeout(()=>{ if(roundActive) resumeGame(); },3000);
+      }
+    }
+  };
+
+  window.resumeGame=()=>{
+    wrongCount=0; roundActive=true;
+    buildGameUI();
+    if(!timerInterval) timerInterval=setInterval(gameLoop,50);
+  };
+
+  function endRound(){
+    clearInterval(timerInterval); timerInterval=null; roundActive=false;
+    if(round<3){
+      round++;
+      const stars=score>=80?'⭐⭐⭐':score>=40?'⭐⭐':'⭐';
+      gameZone.innerHTML=`
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;">
+          <div style="font-size:32px;margin-bottom:8px;">${stars}</div>
+          <div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:6px;">Round ${round-1} done!</div>
+          <div style="font-size:24px;font-weight:900;color:var(--gold);margin-bottom:16px;">Score: ${score}</div>
+          <button class="btn" style="background:var(--gold);color:#1a1a2e;padding:16px 32px;font-size:16px;font-weight:900;border-radius:20px;" onclick="startRound()">Round ${round} — Faster! 🚀</button>
+        </div>`;
+    } else {
+      // Final
+      const stars=score>=80?3:score>=40?2:1;
+      const starStr='⭐'.repeat(stars);
+      gameZone.innerHTML=`
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;">
+          <div class="star-rating">${starStr}</div>
+          <div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:8px;">${stars===3?"I've become an expert!":"Great effort! Keep going!"}</div>
+          <div style="font-size:28px;font-weight:900;color:var(--gold);margin-bottom:6px;">Final Score: ${score}</div>
+          ${stars===3?`<div style="font-size:36px;margin:8px 0;">🏆</div>`:''}
+          <div style="display:flex;gap:10px;margin-top:16px;flex-direction:column;width:100%;padding:0 16px;">
+            <button class="btn" style="background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);padding:12px;border-radius:12px;font-weight:800;" onclick="restartGame()">Play Again 🔄</button>
+            <button class="btn btn-primary" style="background:var(--green);padding:14px;border-radius:12px;" onclick="navigate(12)">Continue → Summary →</button>
+          </div>
+        </div>`;
+      if(stars===3) setTimeout(()=>fireConfetti(gameZone),200);
+    }
+  }
+
+  window.restartGame=()=>{ round=1;score=0;selected=null;timer=30;falling=[];wrongCount=0; showIntro(); };
+  showIntro();
+}
+
+// ─── SCREEN 13: SUMMARY ──────────────────────────────────────────
+function s13(){
+  const sc=makeScreen('sc13');
+  sc.appendChild(makeNav('Summary & Conclusion','S13 · Closure'));
+  sc.appendChild(makeProgressBar(13,13));
+
+  const signposts=[
+    {icon:'🪙',color:'green',title:'Stop 1 — Recall',sub:'Multiplication = Repeated Addition | a×b = b added a times',screen:1},
+    {icon:'📋',color:'coral',title:'Stop 2 — Three Cases',sub:'(+)×(+)=(+) | (+)×(−)=(−) | (−)×(−)=(+)',screen:9},
+    {icon:'⭐',color:'amber',title:'Stop 3 — The One Rule',sub:'Same signs → (+) | Different signs → (−)',screen:9},
+  ];
+
+  const body=document.createElement('div');
+  body.className='scroll-area';
+  body.innerHTML=`
+    <div class="card" style="background:linear-gradient(135deg,var(--green-xl),var(--gold-xl));border:none;margin-bottom:12px;text-align:center;padding:20px;">
+      <div style="font-size:36px;margin-bottom:6px;">🎉</div>
+      <div style="font-size:18px;font-weight:900;color:var(--dark);">Well done, Arjun!</div>
+      <div style="font-size:13px;color:var(--mid);">You solved the mystery of integer multiplication!</div>
+    </div>
+    <div class="char-row">
+      <div class="char">
+        <div class="char-body char-ria" style="animation:bounce 1s 0.2s ease;">😊</div>
+        <div class="char-label">Ria</div>
+      </div>
+      <div style="font-size:26px;">🤝</div>
+      <div class="char">
+        <div class="char-body char-arjun" style="animation:bounce 1s 0.4s ease;">😄</div>
+        <div class="char-label">Arjun</div>
+      </div>
+    </div>
+    <div class="card blue" style="margin:10px 0;">
+      <div style="font-size:13px;font-weight:700;color:var(--blue);">Arjun: "Ria, I finally understand! Multiplication is repeated addition. For integers, I check signs first using The One Rule!"</div>
+      <div class="vo-strip">"Arjun: Ria, ab bilkul samajh aaya! Integers ke liye, pehle signs check karta hoon — same signs → positive, alag signs → negative!"</div>
+    </div>
+    <div class="section-label">Your Learning Journey</div>
+    ${signposts.map((sp,i)=>`
+      <div class="signpost card ${sp.color}" style="animation:slideUp ${0.3+i*0.15}s ease;" onclick="navigate(${sp.screen})">
+        <div class="signpost-icon">${sp.icon}</div>
+        <div class="signpost-content">
+          <div class="signpost-title" style="color:var(--${sp.color}-dark||var(--${sp.color}))">${sp.title}</div>
+          <div class="signpost-sub">${sp.sub}</div>
+        </div>
+        <div style="font-size:16px;color:var(--muted);">›</div>
+      </div>`).join('')}
+    <div class="big-rule" style="background:linear-gradient(135deg,var(--amber-xl),var(--gold-xl));border:2px solid var(--gold);">
+      <div style="font-size:11px;font-weight:900;letter-spacing:1.5px;color:var(--amber);margin-bottom:6px;">THE ONE RULE — ALWAYS REMEMBER</div>
+      <div style="color:var(--green-dark);margin-bottom:2px;">🟢 Same signs → <strong>Positive (+)</strong></div>
+      <div style="color:var(--coral);">🔴 Different signs → <strong>Negative (−)</strong></div>
+    </div>
+    <div class="card" style="text-align:center;margin-top:8px;">
+      <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:8px;">Ready for more practice?</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px;">NCERT Class VII, Chapter 1 — Integers, Exercise 1.3</div>
+      <button class="btn btn-primary" onclick="celebrate()">Try NCERT Exercise 1.3 →</button>
+    </div>
+    <div style="height:70px"></div>`;
+
+  const btmBar=document.createElement('div');
+  btmBar.className='bottom-bar';
+  btmBar.innerHTML=`<button class="btn btn-secondary" style="width:100%;" onclick="navigate(0)">← Restart from Beginning</button>`;
+  sc.appendChild(body);
+  sc.appendChild(btmBar);
+  addScreen(sc);
+
+  setTimeout(()=>fireConfetti(sc),400);
+  setTimeout(()=>fireConfetti(sc),800);
+
+  window.celebrate=()=>{ showToast('Opening NCERT Exercise 1.3! 📖','green-toast',2500); fireConfetti(sc); };
+}
+
+// ─── START ────────────────────────────────────────────────────────
+window.navigate = navigate;
+render();
+</script>
 </body>
 </html>
