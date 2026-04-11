@@ -1,302 +1,606 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Final Interactive Module</title>
-
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<title>Ria &amp; Arjun's Number Adventure — Integer Multiplication</title>
 <style>
-body{font-family:Arial;margin:0;background:#0f172a}
-.container{max-width:900px;margin:auto;padding:20px}
-.screen{display:none;background:#fff;padding:20px;border-radius:12px}
-.screen.active{display:block}
-
-.chat{padding:10px;border-radius:10px;margin:6px 0;max-width:75%}
-.ria{background:#bbf7d0;margin-left:auto}
-.arjun{background:#bfdbfe}
-.name{font-weight:bold;font-size:12px}
-
-button{padding:10px;margin:5px;border:none;border-radius:8px;background:#2563eb;color:#fff}
-.input{padding:10px;width:100%;margin-top:5px}
-
-.match{display:flex;gap:20px}
-.item{padding:10px;border:1px solid #ccc;margin:5px;background:#fff;cursor:grab}
-.drop{border:2px dashed #aaa;padding:10px;margin:5px;background:#fff}
-.correct{background:#bbf7d0}
-.wrong{background:#fecaca}
-
-.line{position:relative;height:120px;border-bottom:2px solid #333;margin:20px 0;background:#fff}
-.tick{position:absolute;width:1px;height:10px;background:#333;bottom:-5px}
-.label{position:absolute;font-size:12px;bottom:-20px}
-.arc{position:absolute;height:40px;border-top:3px solid green;border-radius:50%;opacity:0;transition:0.4s}
-.arc.show{opacity:1}
-.arc.neg{border-top:3px solid red}
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --g:#2E7D32;--gl:#4CAF50;--gx:#E8F5E9;--gd:#1B5E20;
+  --c:#C62828;--cx:#FFEBEE;
+  --p:#6A1B9A;--px:#F3E5F5;--pl:#AB47BC;
+  --a:#E65100;--ax:#FFF3E0;
+  --go:#F9A825;--gox:#FFFDE7;
+  --b:#1565C0;--bx:#E3F2FD;
+  --bg:#FAFAF7;--wh:#fff;--dk:#1A1A1A;--md:#424242;--mu:#757575;--br:#E0E0E0;
+  --r:14px;--rs:8px;--f:'Nunito',sans-serif
+}
+html,body{height:100%;width:100%;background:#1a1a2e;font-family:var(--f);display:flex;align-items:center;justify-content:center;overflow:hidden}
+#app{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.phone{width:390px;height:700px;background:var(--bg);border-radius:32px;overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 0 8px #2a2a3e;display:flex;flex-direction:column}
+#scr{display:flex;flex-direction:column;flex:1;overflow:hidden;background:var(--bg);position:absolute;inset:0}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 7px;background:var(--wh);border-bottom:1px solid var(--br);flex-shrink:0}
+.ntl{font-size:13px;font-weight:800;color:var(--dk)}
+.nbdg{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--gx);color:var(--gd)}
+.pbw{padding:4px 14px 0;flex-shrink:0}
+.pb{height:4px;background:var(--br);border-radius:2px}
+.pbf{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--g),var(--gl));transition:width .4s}
+.pbl{font-size:9px;font-weight:700;color:var(--mu);text-align:right}
+.scroll{flex:1;overflow-y:auto;padding:12px;-ms-overflow-style:none;scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+.bbar{padding:10px 14px;background:var(--wh);border-top:1px solid var(--br);flex-shrink:0}
+.card{background:var(--wh);border-radius:var(--r);padding:13px;margin-bottom:10px;border:1.5px solid var(--br)}
+.gn{background:var(--gx);border-color:#A5D6A7}.co{background:var(--cx);border-color:#FFAB91}
+.pu{background:var(--px);border-color:#CE93D8}.am{background:var(--ax);border-color:#FFCC80}
+.bl{background:var(--bx);border-color:#90CAF9}
+.btn{border:none;border-radius:var(--r);font-family:var(--f);font-weight:800;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;gap:5px}
+.btn:active{transform:scale(.96)}
+.btnp{background:var(--g);color:#fff;padding:12px 22px;font-size:14px;width:100%}
+.btnp:hover{background:var(--gd)}
+.btnco{background:var(--c);color:#fff;padding:12px 22px;font-size:14px;width:100%}
+.btnpu{background:var(--p);color:#fff;padding:12px 22px;font-size:14px;width:100%}
+.btns{background:var(--wh);color:var(--dk);border:2px solid var(--br);padding:8px 14px;font-size:12px}
+.btnsm{padding:6px 12px;font-size:11px;border-radius:var(--rs)}
+.pls{animation:pls 1.5s infinite}
+.char-row{display:flex;justify-content:space-around;align-items:flex-end;padding:6px 16px}
+.char{display:flex;flex-direction:column;align-items:center;gap:3px}
+.cb{width:62px;height:82px;border-radius:50% 50% 40% 40%;display:flex;align-items:center;justify-content:center;font-size:28px}
+.ria{background:linear-gradient(160deg,#4CAF50,#2E7D32)}
+.arjun{background:linear-gradient(160deg,#42A5F5,#1565C0)}
+.cl{font-size:11px;font-weight:800;color:var(--md)}
+.bubs{display:flex;flex-direction:column;gap:7px;padding:0 10px}
+.bub{padding:9px 12px;border-radius:16px;font-size:12px;font-weight:600;line-height:1.45;max-width:86%;animation:pop .2s ease}
+.bub.ria{background:var(--gx);border:1.5px solid #A5D6A7;color:var(--gd);align-self:flex-end;border-bottom-right-radius:3px}
+.bub.arjun{background:var(--bx);border:1.5px solid #90CAF9;color:var(--b);align-self:flex-start;border-bottom-left-radius:3px}
+.bn{font-size:9px;font-weight:800;opacity:.7;margin-bottom:1px;padding:0 12px}
+.vo{background:rgba(0,0,0,.05);border-radius:var(--rs);padding:6px 10px;font-size:10px;font-weight:600;color:var(--md);font-style:italic;border-left:3px solid var(--br);margin-top:6px}
+.inp{border:2.5px solid var(--br);border-radius:var(--rs);padding:10px 14px;font-family:var(--f);font-size:16px;font-weight:800;width:100%;outline:none;text-align:center;transition:border-color .2s;background:var(--wh)}
+.inp:focus{border-color:var(--g)}
+.inp.ok{border-color:var(--g);background:var(--gx)}
+.inp.bad{border-color:var(--c);background:var(--cx);animation:shk .4s}
+.scl{font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:5px}
+.sbdg{display:flex;align-items:center;gap:3px;background:var(--gox);border:1.5px solid var(--go);border-radius:20px;padding:3px 9px;font-size:11px;font-weight:800;color:var(--a)}
+.bnr{padding:9px 12px;border-radius:var(--rs);font-size:12px;font-weight:800;margin-bottom:8px;text-align:center;color:#fff}
+.bnr.g{background:var(--g)}.bnr.c{background:var(--c)}.bnr.p{background:var(--p)}.bnr.a{background:var(--a)}
+.rlc{border-radius:var(--r);padding:12px 14px;margin:7px 0;display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px}
+.rlg{background:linear-gradient(135deg,var(--gx),#C8E6C9);border-left:4px solid var(--g)}
+.rlco{background:linear-gradient(135deg,var(--cx),#FFCDD2);border-left:4px solid var(--c)}
+.rlp{background:linear-gradient(135deg,var(--px),#E1BEE7);border-left:4px solid var(--p)}
+.rla{background:linear-gradient(135deg,var(--ax),#FFE0B2);border-left:4px solid var(--a)}
+.ri{font-size:20px;flex-shrink:0}
+.toast{position:absolute;top:62px;left:50%;transform:translateX(-50%);background:var(--dk);color:#fff;padding:8px 18px;border-radius:28px;font-size:12px;font-weight:700;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.toast.g{background:var(--g)}.toast.r{background:var(--c)}.toast.on{opacity:1}
+.dots{display:flex;gap:5px;justify-content:center;padding:5px 0}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--br);transition:background .3s}
+.dot.on{background:var(--g)}
+.pb2{height:4px;background:var(--br);border-radius:2px;margin:6px 0}
+.pb2f{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--g),var(--gl));transition:width .4s}
+.mrow{display:grid;grid-template-columns:1fr 18px 1fr;gap:7px;align-items:center;margin-bottom:7px}
+.mit{background:var(--wh);border:2px solid var(--br);border-radius:var(--rs);padding:9px;font-size:12px;font-weight:700;text-align:center;cursor:pointer;transition:all .2s;min-height:40px;display:flex;align-items:center;justify-content:center}
+.mit.sel{border-color:var(--b);background:var(--bx);transform:scale(1.04)}
+.mit.ok{border-color:var(--g);background:var(--gx);cursor:default}
+.mit.bad{animation:shk .4s;border-color:var(--c)}
+.jbtn{flex:1;background:var(--wh);border:2px solid var(--g);border-radius:var(--rs);padding:8px 4px;font-size:11px;font-weight:800;color:var(--g);cursor:pointer;min-height:40px;transition:all .15s}
+.jbtn:disabled{opacity:.3;cursor:not-allowed}
+.jbtn.dn{background:var(--g);color:#fff;border-color:var(--g)}
+.jbtn.dnc{background:var(--c);color:#fff;border-color:var(--c)}
+.jrow{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
+.ptbl{width:100%;border-collapse:collapse}
+.ptbl th{background:var(--dk);color:#fff;padding:7px 5px;font-size:11px;font-weight:800}
+.ptbl td{padding:8px 5px;font-size:12px;font-weight:700;text-align:center;border-bottom:1px solid var(--br)}
+.ptbl .pre td{background:var(--cx)}
+.ptbl .dis td{background:#f5f5f5;color:var(--mu)}
+.ptbl .ulk td{background:var(--gx);animation:pop .3s}
+.mcq{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}
+.mo{background:var(--wh);border:2px solid var(--br);border-radius:var(--rs);padding:10px;font-size:14px;font-weight:800;text-align:center;cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.mo:hover{border-color:var(--b);background:var(--bx)}
+.mo.ok{border-color:var(--g);background:var(--gx);color:var(--gd)}
+.mo.bad{border-color:var(--c);background:var(--cx);animation:shk .4s}
+.sgg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0}
+.sgb{padding:15px;border-radius:var(--r);border:none;font-size:22px;font-weight:900;cursor:pointer;transition:all .15s}
+.sgp{background:var(--gx);color:var(--gd)}.sgn{background:var(--cx);color:var(--c)}
+.sgb:hover{transform:scale(1.04)}.sgb.ch{transform:scale(1.06);box-shadow:0 0 0 3px var(--g)}.sgb.chn{transform:scale(1.06);box-shadow:0 0 0 3px var(--c)}
+.hc{display:inline-flex;align-items:center;gap:4px;background:var(--ax);border:1.5px solid #FFCC80;border-radius:20px;padding:4px 10px;font-size:10px;font-weight:700;color:var(--a);margin-top:7px}
+.ccols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+.cc{border-radius:var(--r);overflow:hidden;cursor:pointer;transition:transform .2s}.cc:hover{transform:scale(1.04)}
+.cch{padding:9px 4px;text-align:center;font-size:10px;font-weight:800;color:#fff}
+.ccb{padding:9px 5px;font-size:10px;font-weight:700;color:var(--dk);background:var(--wh)}
+.ccr{font-size:14px;font-weight:900;margin:3px 0}
+.bigrl{font-size:14px;font-weight:900;text-align:center;padding:14px;border-radius:var(--r);margin:9px 0;background:linear-gradient(135deg,var(--ax),var(--gox));border:2px solid var(--go)}
+.proof{background:linear-gradient(135deg,var(--p),var(--pl));color:#fff;border-radius:var(--r);padding:14px;text-align:center;font-size:14px;font-weight:900;margin:9px 0;animation:pop .5s ease}
+.sp{border-radius:var(--r);padding:12px;margin-bottom:8px;cursor:pointer;transition:transform .2s;display:flex;gap:10px;align-items:center}
+.sp:hover{transform:scale(1.02)}
+.gz{flex:1;display:flex;flex-direction:column;overflow:hidden;background:linear-gradient(180deg,#1a1a2e,#16213e);position:relative}
+.fe{position:absolute;background:var(--wh);border:2px solid var(--br);border-radius:10px;padding:7px 12px;font-size:14px;font-weight:800;cursor:pointer;user-select:none}
+.fe.sel{border-color:var(--go);background:var(--gox);box-shadow:0 0 14px rgba(249,168,37,.5);transform:scale(1.08)}
+.gbins{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px}
+.gbin{border-radius:var(--r);padding:14px 8px;text-align:center;cursor:pointer;transition:transform .15s;border:2px solid rgba(255,255,255,.2)}
+.gbin:active{transform:scale(.97)}.gbin.pos{background:rgba(46,125,50,.85)}.gbin.neg{background:rgba(198,40,40,.85)}
+.gbs{font-size:32px;font-weight:900;color:#fff}.gbl{font-size:11px;font-weight:700;color:rgba(255,255,255,.8)}
+.tbar{height:5px;background:rgba(255,255,255,.15);border-radius:3px;margin:5px 10px}
+.tbf{height:100%;background:var(--go);border-radius:3px;transition:width .1s linear}
+.cpc{position:absolute;width:7px;height:7px;border-radius:2px;animation:cfl 1.2s ease forwards}
+.mb{padding:6px 12px;display:flex;justify-content:space-between;align-items:center}
+.str{display:flex;justify-content:center;gap:8px;font-size:40px;margin:10px 0}
+.si{border:2px solid var(--br);border-radius:var(--rs);padding:9px 12px;font-family:var(--f);font-size:13px;font-weight:700;width:100%;outline:none;cursor:pointer;background:var(--wh)}
+.mnl{margin:8px 0;background:var(--wh);border-radius:var(--rs);padding:10px 6px 6px;border:1.5px solid var(--br)}
+@keyframes pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+@keyframes shk{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+@keyframes pls{0%,100%{box-shadow:0 0 0 0 rgba(46,125,50,.4)}50%{box-shadow:0 0 0 8px rgba(46,125,50,0)}}
+@keyframes su{0%{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes cfl{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(250px) rotate(720deg)}}
+@keyframes arcD{from{stroke-dashoffset:200}to{stroke-dashoffset:0}}
+@keyframes bnce{0%,100%{transform:translateY(0)}40%{transform:translateY(-10px)}70%{transform:translateY(-4px)}}
+.su{animation:su .4s ease forwards}
+@media(max-width:420px){.phone{width:100%;height:100vh;border-radius:0;box-shadow:none}}
 </style>
 </head>
-
 <body>
-<div class="container">
-
-<!-- SCREEN 1 -->
-<div id="s1" class="screen active">
-<h2>Story</h2>
-<div class="chat arjun"><div class="name">Arjun</div>I am confused about (-3 × -4)</div>
-<div class="chat ria"><div class="name">Ria</div>Let us explore step by step</div>
-<button onclick="go(2)">Start</button>
-</div>
-
-<!-- SCREEN 2 -->
-<div id="s2" class="screen">
-<h2>Concept</h2>
-<div class="chat ria"><div class="name">Ria</div>Multiplication means repeated addition</div>
-<div class="chat arjun"><div class="name">Arjun</div>So 3×4 means 4+4+4?</div>
-<div class="chat ria"><div class="name">Ria</div>Exactly!</div>
-<button onclick="go(3)">Next</button>
-</div>
-
-<!-- SCREEN 3 -->
-<div id="s3" class="screen">
-<h2>Practice + Match</h2>
-
-<div class="chat ria"><div class="name">Ria</div>Try solving and matching</div>
-
-<p>5×3=?</p>
-<input id="q1" class="input">
-<button onclick="check1()">Check</button>
-<p id="f1"></p>
-
-<div class="match">
-<div>
-<div class="item" draggable="true" id="i1">2×6</div>
-<div class="item" draggable="true" id="i2">3×5</div>
-</div>
-<div>
-<div class="drop" data-match="i1">6+6</div>
-<div class="drop" data-match="i2">5+5+5</div>
-</div>
-</div>
-<p id="fb"></p>
-
-<button onclick="go(4)">Next</button>
-</div>
-
-<!-- SCREEN 4 -->
-<div id="s4" class="screen">
-<h2>Case 1: 3 × 4</h2>
-
-<div class="chat ria"><div class="name">Ria</div>Positive × Positive is Positive</div>
-
-<p>Draw 3 jumps of +4</p>
-<div class="line" id="line1"></div>
-
-<button id="b1" onclick="jumpPos()">Jump 1</button>
-<button id="b2" onclick="jumpPos()" disabled>Jump 2</button>
-<button id="b3" onclick="jumpPos()" disabled>Jump 3</button>
-
-<p id="t1">Total: 0</p>
-<p id="fb1"></p>
-
-<button onclick="go(5)">Next</button>
-</div>
-
-<!-- SCREEN 5 -->
-<div id="s5" class="screen">
-<h2>Practice</h2>
-
-<div class="chat arjun"><div class="name">Arjun</div>Let me try!</div>
-
-<p>4×3=?</p>
-<input id="q2" class="input">
-<button onclick="check2()">Check</button>
-<p id="f2"></p>
-
-<button onclick="go(6)">Next</button>
-</div>
-
-<!-- SCREEN 6 -->
-<div id="s6" class="screen">
-<h2>Case 2: 4 × (-3)</h2>
-
-<div class="chat ria"><div class="name">Ria</div>Positive × Negative is Negative</div>
-
-<p>Draw 4 jumps of -3</p>
-<div class="line" id="line2"></div>
-
-<button id="n1" onclick="jumpNeg()">Jump 1</button>
-<button id="n2" onclick="jumpNeg()" disabled>Jump 2</button>
-<button id="n3" onclick="jumpNeg()" disabled>Jump 3</button>
-<button id="n4" onclick="jumpNeg()" disabled>Jump 4</button>
-
-<p id="t2">Total: 0</p>
-<p id="fb2"></p>
-
-<button onclick="go(7)">Next</button>
-</div>
-
-<!-- SCREEN 7 -->
-<div id="s7" class="screen">
-<h2>Practice</h2>
-
-<div class="chat arjun"><div class="name">Arjun</div>I will try carefully</div>
-
-<p>(-2×7)=?</p>
-<input id="q3" class="input">
-<button onclick="check3()">Check</button>
-<p id="f3"></p>
-
-<button onclick="go(8)">Next</button>
-</div>
-
-<!-- SCREEN 8 -->
-<div id="s8" class="screen">
-<h2>Pattern</h2>
-
-<div class="chat ria"><div class="name">Ria</div>Observe the pattern</div>
-
-<p>-9 → -6 → -3 → 0 → ?</p>
-<input id="q4" class="input">
-<button onclick="check4()">Check</button>
-<p id="f4"></p>
-
-</div>
-
-</div>
-
+<div id="app"><div class="phone" id="phone"><div id="toast" class="toast"></div><div id="scr"></div></div></div>
 <script>
+(function(){
+'use strict';
+var ST={
+  screen:0,s1:{idx:0},
+  s3:{q1Done:false,q1Hints:0,q2Done:{},selLeft:null,stars:0},
+  s5:{jumps:0,q2Att:0,q2Hint:'',stars:0},
+  s7:{jumps:0,q2Att:0,q2Hint:'',bonusDone:false,bonusSel:'',bonusHint:'',stars:0},
+  s8:{done:[],attempts:{},hints:{}},
+  s9:{q1Done:false,q2Att:0,q2Hint:'',q3Hint:'',stars:0},
+  s10:{expanded:-1},
+  s11:{curQ:0,signPicked:null,signCorrect:null,valAtt:0,valHint:'',hintMsg:'',results:[],done:false},
+  s12:{round:1,score:0}
+};
 
-// Navigation
-function go(n){
-document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-document.getElementById('s'+n).classList.add('active');
+var phone=document.getElementById('phone'),toastEl=document.getElementById('toast');
+
+function toast(msg,cls,dur){
+  dur=dur||2000;toastEl.textContent=msg;
+  toastEl.className='toast '+(cls||'g')+' on';
+  setTimeout(function(){toastEl.className='toast';},dur);
 }
 
-// Adaptive feedback
-let a1=0,a2=0,a3=0,a4=0;
-
-function check1(){
-a1++;
-let v=parseInt(q1.value);
-if(v===15) f1.innerText="Correct ✓";
-else if(a1===1) f1.innerText="Hint: repeated addition";
-else if(a1===2) f1.innerText="5+5+5=?";
-else f1.innerText="Answer: 15";
+function confetti(el){
+  var cols=['#4CAF50','#EF5350','#AB47BC','#F9A825','#42A5F5','#FFCA28'];
+  for(var i=0;i<24;i++){
+    var c=document.createElement('div');c.className='cpc';
+    c.style.cssText='left:'+Math.random()*100+'%;top:'+(Math.random()*30+25)+'%;background:'+cols[i%6]+';animation-delay:'+Math.random()*.4+'s;animation-duration:'+(0.8+Math.random()*.7)+'s;';
+    el.appendChild(c);setTimeout((function(cc){return function(){try{cc.remove();}catch(e){}};})(c),1800);
+  }
 }
 
-function check2(){
-a2++;
-let v=parseInt(q2.value);
-if(v===12) f2.innerText="Correct ✓";
-else if(a2===1) f2.innerText="Hint: 3+3+3+3";
-else if(a2===2) f2.innerText="Add four 3s";
-else f2.innerText="Answer: 12";
+function nl(opts){
+  var min=opts.min,max=opts.max,arcs=opts.arcs||[],color=opts.color||'#2E7D32',land=opts.land,W=320,PL=18,PR=18,H=78;
+  var range=max-min;var sx=function(v){return PL+(v-min)/range*(W-PL-PR);};var inner='';
+  inner+='<line x1="'+PL+'" y1="52" x2="'+(W-PR)+'" y2="52" stroke="#424242" stroke-width="1.8" stroke-linecap="round"/>';
+  var st2=range<=20?1:2;
+  for(var iv=min;iv<=max;iv+=st2){var xi=sx(iv);inner+='<line x1="'+xi+'" y1="47" x2="'+xi+'" y2="57" stroke="#424242" stroke-width="1.2"/><text x="'+xi+'" y="70" font-size="8" font-weight="700" fill="#757575" text-anchor="middle" font-family="Nunito,sans-serif">'+iv+'</text>';}
+  arcs.forEach(function(a,ai){
+    var x1=sx(a.from),x2=sx(a.to),mid=(x1+x2)/2,aH=26+ai*4,ac=a.color||color;
+    inner+='<path d="M'+x1+',52 L'+x1+','+(52-aH)+' L'+x2+','+(52-aH)+' L'+x2+',52" fill="none" stroke="'+ac+'" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"'+(a.an?' stroke-dasharray="200" stroke-dashoffset="200" style="animation:arcD 0.5s '+(a.dl||0)+'s ease forwards;"':'')+'/>';
+    inner+='<text x="'+mid+'" y="'+(52-aH-4)+'" font-size="9" font-weight="800" fill="'+ac+'" text-anchor="middle" font-family="Nunito,sans-serif">'+a.label+'</text>';
+  });
+  if(land!==undefined&&land!==null){var lx=sx(land);inner+='<circle cx="'+lx+'" cy="52" r="7" fill="'+color+'" opacity="0.9"/><text x="'+lx+'" y="55" font-size="8" fill="#fff" font-weight="900" text-anchor="middle" font-family="Nunito,sans-serif">'+land+'</text>';}
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="overflow:visible">'+inner+'</svg>';
 }
 
-function check3(){
-a3++;
-let v=parseInt(q3.value);
-if(v===-14) f3.innerText="Correct ✓";
-else if(a3===1) f3.innerText="Hint: result is negative";
-else if(a3===2) f3.innerText="-2×7 = -(2×7)";
-else f3.innerText="Answer: -14";
+function navH(t,b){
+  return '<div class="nav">'+(ST.screen>0?'<button class="btn btns btnsm" onclick="NAV('+(ST.screen-1)+')">&#8592; Back</button>':'<div style="width:50px"></div>')+'<div class="ntl">'+t+'</div><div class="nbdg">'+b+'</div></div>';
+}
+function pbH(cur,tot){
+  return '<div class="pbw"><div class="pb"><div class="pbf" style="width:'+(cur/tot*100).toFixed(0)+'%"></div></div><div class="pbl">'+cur+'/'+tot+'</div></div>';
 }
 
-function check4(){
-a4++;
-let v=parseInt(q4.value);
-if(v===3) f4.innerText="Correct ✓";
-else if(a4===1) f4.innerText="Pattern +3";
-else if(a4===2) f4.innerText="0+3=?";
-else f4.innerText="Answer: 3";
+window.NAV=function(idx){ST.screen=idx;render();};
+
+var scs=[s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13];
+function render(){
+  var el=document.getElementById('scr');
+  el.innerHTML='';
+  scs[ST.screen](el);
 }
 
-// Drag
-document.querySelectorAll(".item").forEach(i=>{
-i.addEventListener("dragstart",e=>{
-e.dataTransfer.setData("text/plain",i.id);
-});
-});
-
-document.querySelectorAll(".drop").forEach(d=>{
-d.addEventListener("dragover",e=>e.preventDefault());
-
-d.addEventListener("drop",e=>{
-e.preventDefault();
-let id=e.dataTransfer.getData("text/plain");
-
-if(id===d.dataset.match){
-d.classList.add("correct");
-fb.innerText="Correct";
-}else{
-d.classList.add("wrong");
-fb.innerText="Try again";
-setTimeout(()=>d.classList.remove("wrong"),500);
-}
-});
-});
-
-// Number line
-function draw(id,min,max){
-let line=document.getElementById(id);
-for(let i=min;i<=max;i++){
-let x=(i-min)*40;
-
-let t=document.createElement("div");
-t.className="tick";
-t.style.left=x+"px";
-line.appendChild(t);
-
-let l=document.createElement("div");
-l.className="label";
-l.innerText=i;
-l.style.left=(x-5)+"px";
-line.appendChild(l);
-}
-}
-draw("line1",0,12);
-draw("line2",-12,0);
-
-let pos1=0,count1=0;
-function jumpPos(){
-if(count1>=3)return;
-
-let arc=document.createElement("div");
-arc.className="arc";
-arc.style.left=(pos1*40)+"px";
-arc.style.width="160px";
-
-line1.appendChild(arc);
-setTimeout(()=>arc.classList.add("show"),50);
-
-pos1+=4;
-count1++;
-
-t1.innerText="Total: "+pos1;
-document.getElementById("b"+(count1+1)).disabled=false;
-
-if(count1===3) fb1.innerText="Correct! 3×4=12";
+function s1(el){
+  var dlgs=[
+    {w:'arjun',t:'Ria, I am stuck on homework. It says (&#8722;3)&times;(&#8722;4). How do you multiply two negative numbers?'},
+    {w:'ria',t:'Great question! But first &#8212; do you remember what multiplication actually means?'},
+    {w:'arjun',t:'Just... multiplying two numbers?'},
+    {w:'ria',t:'There is more! Multiplication is repeated addition. Let me show you with a simple example!'},
+  ];
+  var vos=[
+    '&#8220;Arjun: Ria, main homework mein stuck hoon. (&#8722;3)&times;(&#8722;4) &#8212; do negative numbers multiply kaise hote hain?&#8221;',
+    '&#8220;Ria: Acha sawal! Lekin pehle &#8212; multiplication ka matlab kya hota hai, yaad hai?&#8221;',
+    '&#8220;Arjun: Bas... do numbers multiply karna?&#8221;',
+    '&#8220;Ria: Isse zyada hai! Multiplication matlab baar baar jodna!&#8221;',
+  ];
+  el.innerHTML=navH('Ria &amp; Arjun','S1 &middot; Concrete')+pbH(1,13)+
+    '<div class="scroll" id="s1b">'+
+      '<div class="char-row" style="margin-bottom:8px;">'+
+        '<div class="char"><div class="cb ria">&#128522;</div><div class="cl">Ria</div></div>'+
+        '<div style="font-size:22px;font-weight:900;color:var(--mu);">VS</div>'+
+        '<div class="char"><div class="cb arjun">&#128533;</div><div class="cl">Arjun</div></div>'+
+      '</div>'+
+      '<div class="card" style="background:linear-gradient(135deg,#E8F5E9,#E3F2FD);border:none;margin-bottom:8px;">'+
+        '<div style="font-size:10px;font-weight:800;color:var(--mu);letter-spacing:1px;margin-bottom:5px;">&#128205; Park bench, after school</div>'+
+        '<div style="font-size:12px;color:var(--md);">Arjun is puzzled about homework: <strong style="color:var(--p);">(&#8722;3)&times;(&#8722;4)=?</strong></div>'+
+      '</div>'+
+      '<div class="bubs" id="bubc"></div>'+
+      '<div style="height:70px"></div>'+
+    '</div>'+
+    '<div class="bbar">'+
+      '<div class="dots" id="s1d" style="margin-bottom:7px;"></div>'+
+      '<button class="btn btnp pls" id="s1btn">Next &#8594;</button>'+
+    '</div>';
+  var idx=ST.s1.idx;
+  function rb(){
+    var bc=document.getElementById('bubc');if(!bc)return;
+    var h='';
+    for(var i=0;i<=idx;i++){var d=dlgs[i];h+='<div style="display:flex;flex-direction:column;align-items:'+(d.w==='ria'?'flex-end':'flex-start')+'"><div class="bn" style="color:'+(d.w==='ria'?'var(--g)':'var(--b)')+';">'+(d.w==='ria'?'Ria':'Arjun')+'</div><div class="bub '+d.w+'">'+d.t+'</div></div>';}
+    if(idx<dlgs.length-1)h+='<div class="vo">'+vos[idx]+'</div>';
+    bc.innerHTML=h;
+    var dots=document.getElementById('s1d');
+    if(dots)dots.innerHTML=dlgs.map(function(_,i){return '<div class="dot'+(i<=idx?' on':'')+'"></div>';}).join('');
+    var btn=document.getElementById('s1btn');if(!btn)return;
+    if(idx>=dlgs.length-1){btn.innerHTML="Let's Begin! &#8594;";btn.classList.remove('pls');btn.onclick=function(){ST.screen=1;render();};}
+    else{btn.innerHTML='Next &#8594;';btn.onclick=function(){idx++;ST.s1.idx=idx;rb();};}
+    var sb=document.getElementById('s1b');if(sb)setTimeout(function(){sb.scrollTop=sb.scrollHeight;},80);
+  }
+  document.getElementById('s1btn').onclick=function(){idx++;ST.s1.idx=idx;rb();};
+  rb();
 }
 
-let pos2=0,count2=0;
-function jumpNeg(){
-if(count2>=4)return;
-
-let arc=document.createElement("div");
-arc.className="arc neg";
-arc.style.left=((pos2+12)*40-120)+"px";
-arc.style.width="120px";
-
-line2.appendChild(arc);
-setTimeout(()=>arc.classList.add("show"),50);
-
-pos2-=3;
-count2++;
-
-t2.innerText="Total: "+pos2;
-document.getElementById("n"+(count2+1)).disabled=false;
-
-if(count2===4) fb2.innerText="Correct! 4×(-3)=-12";
+function s2(el){
+  var ex2=false;
+  el.innerHTML=navH('Multiplication = Repeated +','S2 &middot; Concept')+pbH(2,13)+
+    '<div class="scroll" id="s2b">'+
+      '<div style="font-size:16px;font-weight:900;color:var(--dk);margin-bottom:3px;">Multiplication = Repeated Addition</div>'+
+      '<div style="font-size:11px;color:var(--mu);margin-bottom:10px;">Ria explains at the chalkboard &#128203;</div>'+
+      '<div class="rlc rla"><div class="ri">&#128161;</div><div><strong>a &times; b</strong> means: add b, exactly a times!</div></div>'+
+      '<div class="card"><div class="scl">Example 1</div>'+
+        '<div style="font-size:18px;font-weight:900;color:var(--g);text-align:center;margin:5px 0;">3 &times; 4 = 4+4+4 = 12</div>'+
+        '<div class="mnl" id="nl2a"></div>'+
+        '<div style="font-size:11px;color:var(--md);text-align:center;">3 groups of 4 = 12 coins</div>'+
+        '<div class="vo">"Ria: 3 &times; 4 ka matlab hai hum 4 ko teen baar jodte hain!"</div>'+
+      '</div>'+
+      '<div id="ex2c" style="display:none">'+
+        '<div class="card"><div class="scl">Example 2</div>'+
+          '<div style="font-size:18px;font-weight:900;color:var(--g);text-align:center;margin:5px 0;">2 &times; 5 = 5+5 = 10</div>'+
+          '<div class="mnl" id="nl2b"></div>'+
+          '<div class="vo">"Arjun: Oh! Sirf baar baar addition ka shortcut hai?"</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="card co" style="margin-top:7px;"><div style="font-size:12px;font-weight:700;color:var(--c);">Ria: &ldquo;Now &#8212; what if the number we are adding is <em>negative</em>? That is where integers come in!&rdquo;</div></div>'+
+      '<div style="height:70px"></div>'+
+    '</div>'+
+    '<div class="bbar"><button class="btn btns" style="width:100%;margin-bottom:7px;" id="ex2btn">Show Example 2</button><button class="btn btnp" onclick="NAV(2)">I understand &#8594;</button></div>';
+  document.getElementById('nl2a').innerHTML=nl({min:0,max:13,arcs:[{from:0,to:4,label:'+4',an:true,dl:0},{from:4,to:8,label:'+4',an:true,dl:.5},{from:8,to:12,label:'+4',an:true,dl:1}],land:12});
+  document.getElementById('ex2btn').onclick=function(){
+    if(!ex2){ex2=true;document.getElementById('ex2c').style.display='block';this.style.display='none';
+      document.getElementById('nl2b').innerHTML=nl({min:0,max:11,arcs:[{from:0,to:5,label:'+5',an:true,dl:0},{from:5,to:10,label:'+5',an:true,dl:.5}],land:10});}
+  };
 }
+
+function s3(el){
+  var st=ST.s3,mL=['2&times;6','4&times;2','3&times;5'],mR=['6+6','2+2+2+2','5+5+5'],corr={0:0,1:1,2:2};
+  function r(){
+    var q1h=st.q1Done?'<div class="inp ok">15 &#10003;</div><div class="mnl" id="nlm"></div>':
+      '<div style="display:flex;gap:7px;margin-top:7px;"><input type="number" id="q1i" class="inp" style="flex:1;" placeholder="?"><button class="btn btnp" style="width:auto;padding:10px 14px;" onclick="chk1()">Check</button></div>'+(st.q1Hint?'<div class="hc">&#128161; '+st.q1Hint+'</div>':'');
+    var mrh=mL.map(function(l,i){
+      var done=st.q2Done[i];
+      return '<div class="mrow"><div class="mit'+(st.selLeft===i&&!done?' sel':'')+(done?' ok':'')+(st.wL===i?' bad':'')+'" onclick="sL('+i+')">'+l+'</div>'+
+        '<div style="font-size:14px;text-align:center;">'+(done?'&#9989;':'&#8594;')+'</div>'+
+        '<div class="mit'+(done?' ok':'')+(st.wR===i?' bad':'')+'" onclick="sR('+i+')">'+mR[i]+'</div></div>';
+    }).join('');
+    el.innerHTML=navH('Quick Practice','S3 &middot; Practice')+pbH(3,13)+
+      '<div class="scroll">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><div style="font-size:15px;font-weight:900;color:var(--dk);">Quick Practice</div><div class="sbdg">&#11088; '+st.stars+'/2</div></div>'+
+        '<div class="card"><div class="scl">Q1 &#8212; Fill in the blank</div>'+
+          '<div style="font-size:14px;font-weight:800;text-align:center;margin:7px 0;color:var(--dk);">5 &times; 3 = 3+3+3+3+3 = <span style="color:var(--g);">___</span></div>'+q1h+
+        '</div>'+
+        '<div class="card" style="margin-top:8px;"><div class="scl">Q2 &#8212; Tap to Match</div>'+
+          '<div style="font-size:11px;color:var(--mu);margin-bottom:7px;">Tap left, then tap right to match!</div>'+mrh+
+        '</div><div style="height:70px"></div>'+
+      '</div>'+
+      '<div class="bbar">'+(st.stars>=2?'<button class="btn btnp" onclick="NAV(3)">Continue &#8594; Case 1 &#127881;</button>':'')+'</div>';
+    if(st.q1Done){var nm=document.getElementById('nlm');if(nm)nm.innerHTML=nl({min:0,max:16,arcs:[{from:0,to:3,label:'+3',an:true,dl:0},{from:3,to:6,label:'+3',an:true,dl:.3},{from:6,to:9,label:'+3',an:true,dl:.6},{from:9,to:12,label:'+3',an:true,dl:.9},{from:12,to:15,label:'+3',an:true,dl:1.2}],land:15});}
+  }
+  window.chk1=function(){var v=parseInt((document.getElementById('q1i')||{}).value||'');if(v===15){st.q1Done=true;st.stars=Math.max(st.stars,1);toast('Correct! 5&#215;3=15 &#10003; &#11088;','g');r();}else{st.q1Hints=(st.q1Hints||0)+1;var h=['How many 3s are being added? Count once more.','Scaffold: 3, 6, 9, 12, ___?'];st.q1Hint=h[Math.min(st.q1Hints-1,1)];if(st.q1Hints>=3){st.q1Done=true;st.stars=Math.max(st.stars,1);toast('Answer: 15 &#10003;','g');}r();}};
+  window.sL=function(i){if(st.q2Done[i])return;st.selLeft=i;r();};
+  window.sR=function(rv){if(st.selLeft===null||st.selLeft===undefined)return;var i=st.selLeft;if(corr[i]===rv){st.q2Done[i]=true;st.selLeft=null;st.wL=null;st.wR=null;if(Object.keys(st.q2Done).length===3){st.stars=2;toast('All matched! &#127881;','g');setTimeout(function(){confetti(el);},200);}else toast('Correct match! &#9989;','g');}else{st.wL=i;st.wR=rv;st.selLeft=null;toast('Try again! How many times is it added?','r');setTimeout(function(){st.wL=null;st.wR=null;r();},500);}r();};
+  r();
+}
+
+function s4(el){
+  var j=0;
+  function r(){
+    var arcs=[];for(var i=0;i<j;i++)arcs.push({from:i*4,to:(i+1)*4,label:'+4'});
+    var ext=j===3?'<div class="card su" style="margin-top:7px;"><div style="font-size:14px;font-weight:900;text-align:center;color:var(--dk);">3 &times; 4 = 4+4+4 = <span style="color:var(--g);font-size:18px;">12</span></div><div style="font-size:11px;text-align:center;color:var(--mu);">Arjun earned &#8377;12! &#127881;</div></div><div class="rlc rlg su"><div class="ri">&#9989;</div><div><strong>(+)&times;(+)=(+)</strong><br><span style="font-size:11px;">Positive groups &times; positive amounts = Positive!</span></div></div>':'';
+    var jb='<div class="jrow">'+[1,2,3].map(function(jj){return '<button class="jbtn'+(j>=jj?' dn':'')+(j<jj-1?' disabled':'')+'" '+(j<jj-1?'disabled':'')+' onclick="dj4('+jj+')">Jump '+jj+' '+(j>=jj?'&#10003;':'')+'</button>';}).join('')+'</div>';
+    el.innerHTML=navH('Case 1 &#8212; (+)&times;(+)=(+)','S4 &middot; Case 1')+pbH(4,13)+
+      '<div class="scroll"><div class="bnr g">&#128214; CASE 1: (+)&times;(+)=(+)</div>'+
+        '<div class="card gn"><div class="scl">Story</div><div style="font-size:13px;font-weight:700;color:var(--gd);">Arjun earns &#8377;4/day for <strong>3 days</strong>. How much does he earn?</div><div class="vo">"Ria: Arjun roz &#8377;4 kamata hai, 3 din tak. Yeh hai 3 groups of +4."</div></div>'+
+        '<div class="card"><div class="scl">Number Line &#8212; Tap to Draw Jumps!</div><div style="text-align:center;font-size:12px;font-weight:700;color:var(--mu);margin-bottom:6px;">Total: <strong style="color:var(--g);font-size:16px;">+'+(j*4)+'</strong></div><div id="nls4"></div>'+jb+'</div>'+
+        ext+'<div style="height:70px"></div></div>'+
+      '<div class="bbar">'+(j===3?'<button class="btn btnp" onclick="NAV(4)">Continue &#8594; Practice</button>':'<button class="btn btns" style="width:100%;" onclick="dj4('+(j+1)+')">Draw Jump '+(j+1)+' &#8594;</button>')+'</div>';
+    var n=document.getElementById('nls4');if(n)n.innerHTML=nl({min:0,max:13,arcs:arcs,land:j===3?12:null});
+  }
+  window.dj4=function(jj){if(jj===j+1){j=jj;r();}};r();
+}
+
+function s5(el){
+  var st=ST.s5;
+  function r(){
+    var arcs=[];for(var i=0;i<Math.min(st.jumps,4);i++)arcs.push({from:i*3,to:(i+1)*3,label:'+3'});
+    var jb='<div class="jrow">'+[1,2,3,4].map(function(jj){return '<button class="jbtn'+(st.jumps>=jj?' dn':'')+(st.jumps<jj-1?' disabled':'')+'" '+(st.jumps<jj-1?'disabled':'')+' onclick="dj5('+jj+')"">+3 '+(st.jumps>=jj?'&#10003;':'')+'</button>';}).join('')+'</div>';
+    var q2h=st.stars>=2?'<div class="inp ok">30 &#10003;</div>':'<div style="display:flex;gap:7px;"><input type="number" id="q2s5" class="inp" style="flex:1;" placeholder="?"><button class="btn btnp" style="width:auto;padding:10px 14px;" onclick="ck2s5()">Check</button></div>'+(st.q2Hint?'<div class="hc">&#128161; '+st.q2Hint+'</div>':'');
+    el.innerHTML=navH('Case 1 Practice','S5 &middot; Practice')+pbH(5,13)+
+      '<div class="scroll"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><div style="font-size:15px;font-weight:900;color:var(--dk);">Case 1 Practice</div><div class="sbdg">&#11088; '+st.stars+'/2</div></div>'+
+        '<div class="bnr g">CASE 1: (+)&times;(+)=(+)</div>'+
+        '<div class="card"><div class="scl">Q1 &#8212; Find 4&times;3 using number line</div><div id="nls5"></div>'+jb+(st.jumps>=4?'<div style="color:var(--g);font-weight:800;text-align:center;margin-top:7px;">4&times;3=12 &#10003; &#11088;</div>':'')+'</div>'+
+        '<div class="card" style="margin-top:7px;"><div class="scl">Q2 &#8212; Find 6&times;5</div><div style="font-size:12px;color:var(--mu);margin-bottom:6px;">Both positive. Sign?</div>'+q2h+'</div>'+
+        '<div style="height:70px"></div></div>'+
+      '<div class="bbar">'+(st.stars>=2?'<button class="btn btnp" onclick="NAV(5)">Continue &#8594; Case 2 &#127881;</button>':'')+'</div>';
+    var n=document.getElementById('nls5');if(n)n.innerHTML=nl({min:0,max:13,arcs:arcs,land:st.jumps>=4?12:null});
+  }
+  window.dj5=function(jj){if(jj===st.jumps+1){st.jumps=jj;if(st.jumps>=4)st.stars=Math.max(st.stars,1);r();}};
+  window.ck2s5=function(){var v=parseInt((document.getElementById('q2s5')||{}).value||'');if(v===30){st.stars=2;toast('Correct! 30 &#10003; &#127881;','g');setTimeout(function(){confetti(el);},200);r();}else{st.q2Att++;var h=['Both positive &#8594; answer positive. Now 6&times;5.','Scaffold: 6 groups of 5 = 5+5+5+5+5+5 = ___','Answer: 30'];st.q2Hint=h[Math.min(st.q2Att-1,2)];if(st.q2Att>=3){st.stars=2;toast('Answer: 30 &#10003;','g');}r();}};
+  r();
+}
+
+function s6(el){
+  var j=0;
+  function r(){
+    var arcs=[];for(var i=0;i<j;i++)arcs.push({from:-i*3,to:-(i+1)*3,label:'&#8722;3',color:'#C62828'});
+    var ext=j===4?'<div class="card su"><div style="font-size:13px;font-weight:900;text-align:center;color:var(--dk);">4&times;(&#8722;3)=&#8722;12</div><div style="font-size:11px;text-align:center;color:var(--mu);">Arjun lost &#8377;12! &#128543;</div></div><div class="rlc rlco su"><div class="ri">&#10060;</div><div><strong>(+)&times;(&#8722;)=(&#8722;)</strong><br><span style="font-size:11px;">Positive groups of negative amounts = Negative!</span></div></div><div class="rlc rlp su"><div class="ri">&#128260;</div><div><strong>(&#8722;)&times;(+)=(&#8722;) too!</strong><br><span style="font-size:11px;">Multiplication is commutative!</span></div></div>':'';
+    var jb='<div class="jrow">'+[1,2,3,4].map(function(jj){return '<button class="jbtn'+(j>=jj?' dnc':'')+(j<jj-1?' disabled':'')+'" style="'+(j>=jj?'background:var(--c);color:#fff;border-color:var(--c);':'border-color:var(--c);color:var(--c);')+'" '+(j<jj-1?'disabled':'')+' onclick="dj6('+jj+')">&#8722;3 '+(j>=jj?'&#10003;':'')+'</button>';}).join('')+'</div>';
+    el.innerHTML=navH('Case 2 &#8212; Negative&times;Positive','S6 &middot; Case 2')+pbH(6,13)+
+      '<div class="scroll"><div class="bnr c">&#128214; CASE 2: (+)&times;(&#8722;)=(&#8722;)</div>'+
+        '<div class="card co"><div class="scl">Story</div><div style="font-size:13px;font-weight:700;color:var(--c);">Arjun pays &#8377;3/day to canteen for <strong>4 days</strong>. Losing money!</div><div class="vo">"Ria: Arjun roz &#8377;3 khota hai, 4 din tak. 4 groups of (&#8722;3)."</div></div>'+
+        '<div class="card"><div class="scl">Number Line &#8212; Going LEFT! &#8592;</div><div style="text-align:center;font-size:12px;font-weight:700;color:var(--mu);margin-bottom:5px;">Total: <strong style="color:var(--c);font-size:16px;">'+(j*-3)+'</strong></div><div id="nls6"></div>'+jb+'</div>'+
+        ext+'<div style="height:70px"></div></div>'+
+      '<div class="bbar">'+(j===4?'<button class="btn btnco" onclick="NAV(6)">Continue &#8594; Practice</button>':'<button class="btn btns" style="width:100%;border-color:var(--c);color:var(--c);" onclick="dj6('+(j+1)+')">Draw Jump '+(j+1)+' &#8592;</button>')+'</div>';
+    var n=document.getElementById('nls6');if(n)n.innerHTML=nl({min:-13,max:1,arcs:arcs,color:'#C62828',land:j===4?-12:null});
+  }
+  window.dj6=function(jj){if(jj===j+1){j=jj;r();}};r();
+}
+
+function s7(el){
+  var st=ST.s7;
+  function r(){
+    var arcs=[];for(var i=0;i<Math.min(st.jumps,3);i++)arcs.push({from:-i*4,to:-(i+1)*4,label:'&#8722;4',color:'#C62828'});
+    var jb='<div class="jrow">'+[1,2,3].map(function(jj){return '<button class="jbtn'+(st.jumps>=jj?' dnc':'')+(st.jumps<jj-1?' disabled':'')+'" style="'+(st.jumps>=jj?'background:var(--c);color:#fff;border-color:var(--c);':'border-color:var(--c);color:var(--c);')+'" '+(st.jumps<jj-1?'disabled':'')+' onclick="dj7('+jj+')">&#8722;4 '+(st.jumps>=jj?'&#10003;':'')+'</button>';}).join('')+'</div>';
+    var q2h=st.stars>=2?'<div class="inp ok">&#8722;14 &#10003;</div>':'<div style="display:flex;gap:7px;"><input type="number" id="q2s7" class="inp" style="flex:1;" placeholder="?"><button class="btn btnco" style="width:auto;padding:10px 14px;" onclick="ck2s7()">Check</button></div>'+(st.q2Hint?'<div class="hc">&#128161; '+st.q2Hint+'</div>':'');
+    var mcq=st.bonusDone?'<div class="inp ok">&#8722;15 &#10003; Commutative!</div>':'<div class="mcq">'+['&#8722;15','+15','&#8722;5','+5'].map(function(o){var raw=o.replace(/&[^;]+;/g,function(e){return e==='&#8722;'?'-':'+';});return '<div class="mo'+(st.bonusSel===raw?(raw==='−15'?' ok':' bad'):'')+'" onclick="ckB7(\''+raw+'\')">'+o+'</div>';}).join('')+'</div>'+(st.bonusHint?'<div class="hc">&#128161; '+st.bonusHint+'</div>':'');
+    el.innerHTML=navH('Case 2 Practice','S7 &middot; Practice')+pbH(7,13)+
+      '<div class="scroll"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;"><div style="font-size:15px;font-weight:900;">Case 2 Practice</div><div class="sbdg">&#11088; '+st.stars+'/3</div></div>'+
+        '<div class="bnr c">CASE 2: (+)&times;(&#8722;)=(&#8722;) and (&#8722;)&times;(+)=(&#8722;)</div>'+
+        '<div class="card"><div class="scl">Q1 &#8212; Find 3&times;(&#8722;4) using number line</div><div id="nls7"></div>'+jb+(st.jumps>=3?'<div style="color:var(--c);font-weight:800;text-align:center;margin-top:7px;">3&times;(&#8722;4)=&#8722;12 &#10003; &#11088;</div>':'')+'</div>'+
+        '<div class="card" style="margin-top:7px;"><div class="scl">Q2 &#8212; Find (&#8722;2)&times;7</div>'+q2h+'</div>'+
+        '<div class="card" style="margin-top:7px;"><div class="scl">Bonus &#8212; Commutativity</div><div style="font-size:13px;font-weight:800;margin-bottom:7px;">If 3&times;(&#8722;5)=&#8722;15, then (&#8722;5)&times;3=?</div>'+mcq+'</div>'+
+        '<div style="height:70px"></div></div>'+
+      '<div class="bbar">'+(st.stars>=3?'<button class="btn btnp" onclick="NAV(7)">Continue &#8594; Case 3 &#127881;</button>':'')+'</div>';
+    var n=document.getElementById('nls7');if(n)n.innerHTML=nl({min:-13,max:1,arcs:arcs,color:'#C62828',land:st.jumps>=3?-12:null});
+  }
+  window.dj7=function(jj){if(jj===st.jumps+1){st.jumps=jj;if(st.jumps>=3)st.stars=Math.max(st.stars,1);r();}};
+  window.ck2s7=function(){var v=parseInt((document.getElementById('q2s7')||{}).value||'');if(v===-14){st.stars=Math.max(st.stars,2);toast('Correct! &#8722;14 &#10003;','g');r();}else{st.q2Att++;var h=['Sign check: one neg, one pos &#8594; negative. 2&#215;7=14.','Scaffold: 2&#215;7=14. Apply sign: &#8722;14'];st.q2Hint=h[Math.min(st.q2Att-1,1)];if(st.q2Att>=3){st.stars=Math.max(st.stars,2);toast('&#8722;14 &#10003;','g');}r();}};
+  window.ckB7=function(opt){if(st.bonusDone)return;st.bonusSel=opt;if(opt==='-15'){st.bonusDone=true;st.stars=3;toast('Correct! Commutative! &#127881;','g');setTimeout(function(){confetti(el);},200);}else st.bonusHint='Multiplication commutative hai &#8212; same result!';r();};
+  r();
+}
+
+function s8(el){
+  var st=ST.s8,preR=[['3&times;(&#8722;3)','&#8722;9'],['2&times;(&#8722;3)','&#8722;6'],['1&times;(&#8722;3)','&#8722;3'],['0&times;(&#8722;3)','0']];
+  var discR=[{e:'(&#8722;1)&times;(&#8722;3)',exp:3},{e:'(&#8722;2)&times;(&#8722;3)',exp:6},{e:'(&#8722;3)&times;(&#8722;3)',exp:9}];
+  function r(){
+    var ad=st.done.length===3;
+    var tbl='<table class="ptbl"><tr><th>Expression</th><th>Product</th><th>Sign</th></tr>';
+    preR.forEach(function(rr){tbl+='<tr class="pre"><td>'+rr[0]+'</td><td>'+rr[1]+'</td><td>'+(rr[1].indexOf('-')>=0||rr[1]==='&#8722;9'||rr[1]==='&#8722;6'||rr[1]==='&#8722;3'?'&#8722;':rr[1]==='0'?'0':'+')+'</td></tr>';});
+    discR.forEach(function(rr,i){var done=st.done.indexOf(i)>=0;tbl+='<tr class="'+(done?'ulk':'dis')+'"><td>'+rr.e+'</td><td style="'+(done?'color:var(--g);font-size:15px':'color:var(--mu)')+'">'+(done?'+'+rr.exp:'?')+'</td><td>'+(done?'&#9989;':'&#128274;')+'</td></tr>';});
+    tbl+='</table>';
+    var pin='';
+    if(!ad){var ri=st.done.length;pin='<div class="card" style="margin-top:7px;"><div class="scl">Predict the next product!</div><div style="font-size:14px;font-weight:800;margin-bottom:7px;color:var(--dk);">'+discR[ri].e+' = ?</div><div style="display:flex;gap:7px;"><input type="number" id="pi" class="inp" style="flex:1;" placeholder="+?"><button class="btn btnpu" style="width:auto;padding:10px 14px;" onclick="chkP8()">Unlock &#128275;</button></div>'+(st.hints[ri]?'<div class="hc">&#128161; '+st.hints[ri]+'</div>':'')+'</div>';}
+    el.innerHTML=navH('Case 3 &#8212; The Big Discovery!','S8 &middot; Case 3')+pbH(8,13)+
+      '<div class="scroll"><div class="bnr p">&#128302; CASE 3 &#8212; THE BIG DISCOVERY!</div>'+
+        '<div class="card pu"><div class="scl">Story</div><div style="font-size:12px;font-weight:700;color:var(--p);">Shopkeeper removes a &#8377;3 charge from Arjun\'s bill every day for 4 days. Removing negative = SAVING!</div></div>'+
+        '<div style="background:linear-gradient(135deg,#FFF8DC,#FAEBD7);border-radius:var(--r);border:2px solid #D4A017;padding:10px;margin-bottom:9px;"><div style="font-size:11px;font-weight:900;color:#8B6914;text-align:center;margin-bottom:7px;">&#128220; MAGIC PATTERN SCROLL</div><div style="font-size:10px;font-weight:700;color:var(--mu);text-align:right;margin-bottom:4px;">Products &#8593; by +3 each step</div>'+tbl+'</div>'+
+        pin+(ad?'<div class="proof">&#127881; PROOF COMPLETE!</div><div class="rlc rlp" style="border:2px solid var(--go);"><div class="ri">&#127942;</div><div><strong>(&#8722;)&times;(&#8722;)=(+)</strong><br><span style="font-size:11px;">Two negatives cancel &#8212; result is Positive!</span></div></div><div class="card am"><div style="font-size:12px;font-weight:700;color:var(--a);">Arjun: "Removing a negative is like adding a positive! Makes total sense!"</div></div>':'')+
+        '<div style="height:70px"></div></div>'+
+      '<div class="bbar">'+(ad?'<button class="btn btnpu" onclick="NAV(8)">Continue &#8594; Practice Case 3</button>':'<div style="font-size:11px;font-weight:600;color:var(--mu);text-align:center;">Predict and unlock each row!</div>')+'</div>';
+  }
+  window.chkP8=function(){var ri=st.done.length;var v=parseInt((document.getElementById('pi')||{}).value||'');if(v===discR[ri].exp){st.done.push(ri);toast('+'+discR[ri].exp+' &#127775;','g');if(st.done.length===3)setTimeout(function(){confetti(el);},300);}else{st.attempts[ri]=(st.attempts[ri]||0)+1;var h=['Is the product increasing or decreasing? &#8593;','Previous product + 3 = ?','Auto: +'+discR[ri].exp];st.hints[ri]=h[Math.min(st.attempts[ri]-1,2)];if(st.attempts[ri]>=3){st.done.push(ri);toast('+'+discR[ri].exp+' &#10003;','g');}}r();};
+  r();
+}
+
+function s9(el){
+  var st=ST.s9;
+  function r(){
+    var q1h=st.q1Done?'<div class="card gn"><div style="font-weight:800;text-align:center;color:var(--g);">Pattern works! (&#8722;1)&times;(&#8722;5)=+5, (&#8722;2)&times;(&#8722;5)=+10 &#10003; &#11088;</div></div>':
+      '<table class="ptbl" style="margin-bottom:7px;"><tr><th>Expression</th><th>Product</th></tr><tr class="pre"><td>2&times;(&#8722;5)</td><td>&#8722;10</td></tr><tr class="pre"><td>1&times;(&#8722;5)</td><td>&#8722;5</td></tr><tr class="pre"><td>0&times;(&#8722;5)</td><td>0</td></tr><tr class="dis"><td>(&#8722;1)&times;(&#8722;5)</td><td><input type="number" id="q1a" class="inp" style="width:70px;font-size:12px;padding:5px;text-align:center;" placeholder="?"></td></tr><tr class="dis"><td>(&#8722;2)&times;(&#8722;5)</td><td>?</td></tr></table><button class="btn btnpu" style="width:auto;padding:8px 18px;" onclick="ck1s9()">Submit</button>';
+    var q2h=st.stars>=2?'<div class="inp ok">+24 &#10003;</div>':'<div style="display:flex;gap:7px;"><input type="number" id="q2s9" class="inp" style="flex:1;" placeholder="?"><button class="btn btnpu" style="width:auto;padding:10px 12px;" onclick="ck2s9()">Check</button></div>'+(st.q2Hint?'<div class="hc">&#128161; '+st.q2Hint+'</div>':'');
+    var q3h=st.stars>=3?'<div class="inp ok">(&#8722;3)&times;(&#8722;2)=+6 &#10003;</div>':
+      '<select class="si" id="q3e" style="margin-bottom:7px;"><option value="">Select expression...</option><option value="a">(&#8722;3)&times;(&#8722;2)</option><option value="b">3&times;2</option><option value="c">(&#8722;3)&times;2</option><option value="d">3&times;(&#8722;2)</option></select><div style="display:flex;gap:7px;"><input type="number" id="q3v" class="inp" style="flex:1;" placeholder="Answer?"><button class="btn btnpu" style="width:auto;padding:10px 12px;" onclick="ck3s9()">Check</button></div>'+(st.q3Hint?'<div class="hc">&#128161; '+st.q3Hint+'</div>':'');
+    el.innerHTML=navH('Case 3 Practice','S9 &middot; Practice')+pbH(9,13)+
+      '<div class="scroll"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;"><div style="font-size:15px;font-weight:900;">Case 3 Practice</div><div class="sbdg">&#11088; '+st.stars+'/3</div></div>'+
+        '<div class="bnr p">CASE 3: (&#8722;)&times;(&#8722;)=(+)</div>'+
+        '<div class="card"><div class="scl">Q1 &#8212; Pattern Table</div>'+q1h+'</div>'+
+        '<div class="card" style="margin-top:7px;"><div class="scl">Q2 &#8212; Find (&#8722;6)&times;(&#8722;4)</div>'+q2h+'</div>'+
+        '<div class="card" style="margin-top:7px;"><div class="scl">Q3 &#8212; Temperature Story</div><div style="font-size:12px;font-weight:700;margin-bottom:7px;color:var(--dk);">Temperature drops 2&deg;C/hour. Going back 3 hours &#8212; what is the change?</div>'+q3h+'</div>'+
+        '<div style="height:70px"></div></div>'+
+      '<div class="bbar">'+(st.stars>=3?'<button class="btn btnp" onclick="NAV(9)">Continue &#8594; All Cases! &#127881;</button>':'')+'</div>';
+  }
+  window.ck1s9=function(){var v=parseInt((document.getElementById('q1a')||{}).value||'');if(v===5){st.q1Done=true;st.stars=Math.max(st.stars,1);toast('Pattern works! &#10003; &#11088;','g');}else toast('Look at pattern &#8212; after 0 comes +5 then +10','r');r();};
+  window.ck2s9=function(){var v=parseInt((document.getElementById('q2s9')||{}).value||'');if(v===24){st.stars=Math.max(st.stars,2);toast('Correct! +24 &#10003;','g');r();}else{st.q2Att++;var h=['Both negative &#8594; same signs &#8594; positive. Now 6&#215;4.','Step 1: same signs&#8594;+. Step 2: 6&#215;4=___'];st.q2Hint=h[Math.min(st.q2Att-1,1)];if(st.q2Att>=3){st.stars=Math.max(st.stars,2);toast('+24 &#10003;','g');}r();}};
+  window.ck3s9=function(){var expr=(document.getElementById('q3e')||{}).value||'';var v=parseInt((document.getElementById('q3v')||{}).value||'');if(expr==='a'&&v===6){st.stars=3;toast('Correct! (&#8722;3)&times;(&#8722;2)=+6 &#127881;','g');setTimeout(function(){confetti(el);},200);}else if(expr!=='a')st.q3Hint='Going backwards = negative time. Dropping = negative change.';else st.q3Hint='Good expression! Now (&#8722;3)&times;(&#8722;2) = same signs &#8594; positive = +6';r();};
+  r();
+}
+
+function s10(el){
+  var st=ST.s10;
+  var cases=[
+    {h:'CASE 1',col:'var(--g)',r:'(+)&times;(+)=(+)',eg:'3&times;4=+12',story:'Arjun earns &#8377;4/day &times; 3 days',nlc:{min:0,max:13,arcs:[{from:0,to:4,label:'+4'},{from:4,to:8,label:'+4'},{from:8,to:12,label:'+4'}],color:'#2E7D32',land:12}},
+    {h:'CASE 2',col:'var(--c)',r:'(+)&times;(&#8722;)=(&#8722;)',eg:'4&times;(&#8722;3)=&#8722;12',story:'Arjun loses &#8377;3/day &times; 4 days',nlc:{min:-13,max:1,arcs:[{from:0,to:-3,label:'&#8722;3',color:'#C62828'},{from:-3,to:-6,label:'&#8722;3',color:'#C62828'},{from:-6,to:-9,label:'&#8722;3',color:'#C62828'},{from:-9,to:-12,label:'&#8722;3',color:'#C62828'}],color:'#C62828',land:-12}},
+    {h:'CASE 3 &#9733;',col:'var(--p)',r:'(&#8722;)&times;(&#8722;)=(+)',eg:'(&#8722;2)&times;(&#8722;3)=+6',story:'Shopkeeper removes &#8722;&#8377;3 &times; 4',nlc:{min:0,max:7,arcs:[{from:0,to:6,label:'+6',color:'#6A1B9A'}],color:'#6A1B9A',land:6}},
+  ];
+  function r(){
+    var cc=cases.map(function(c,i){return '<div class="cc" onclick="expC('+i+')"><div class="cch" style="background:'+c.col+';">'+c.h+'</div><div class="ccb"><div class="ccr" style="color:'+c.col+';">'+c.r+'</div><div style="font-size:9px;color:var(--mu);">'+c.eg+'</div></div></div>';}).join('');
+    var exp=st.expanded>=0?
+      '<div class="card su" style="border-color:'+cases[st.expanded].col+';border-width:2px;margin-top:7px;">'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;"><div style="font-size:14px;font-weight:900;color:'+cases[st.expanded].col+';">'+cases[st.expanded].h+'</div><button class="btn btns btnsm" onclick="expC(-1)">Got it &#10003;</button></div>'+
+        '<div style="font-size:20px;font-weight:900;color:'+cases[st.expanded].col+';text-align:center;margin:6px 0;">'+cases[st.expanded].r+'</div>'+
+        '<div style="font-size:13px;font-weight:700;text-align:center;color:var(--dk);">e.g. '+cases[st.expanded].eg+'</div>'+
+        '<div style="font-size:11px;color:var(--mu);text-align:center;margin-top:3px;font-style:italic;">'+cases[st.expanded].story+'</div>'+
+        '<div class="mnl" id="cnl"></div>'+
+      '</div>':'';
+    el.innerHTML=navH('All Three Cases','S10 &middot; Recap')+pbH(10,13)+
+      '<div class="scroll"><div style="font-size:15px;font-weight:900;margin-bottom:3px;">Complete Rule Card</div><div style="font-size:11px;color:var(--mu);margin-bottom:9px;">Tap any case to see full example!</div>'+
+        '<div class="ccols" style="margin-bottom:9px;">'+cc+'</div>'+exp+
+        '<div class="bigrl"><div style="font-size:11px;font-weight:900;letter-spacing:1px;color:var(--a);margin-bottom:5px;">THE ONE RULE</div><div style="color:var(--gd);">&#128994; Same signs &#8594; <strong>Positive (+)</strong></div><div style="color:var(--c);">&#128308; Different signs &#8594; <strong>Negative (&#8722;)</strong></div></div>'+
+        '<div class="card bl"><div style="font-size:12px;font-weight:700;color:var(--b);">Arjun: &ldquo;Check signs first, then multiply. Got it!&rdquo;</div><div class="vo">"Ria: Ab tum challenge ke liye taiyaar ho Arjun!"</div></div>'+
+        '<div style="height:70px"></div></div>'+
+      '<div class="bbar"><button class="btn btnp" onclick="NAV(10)">Ready for Mixed Practice! &#8594;</button></div>';
+    if(st.expanded>=0){var cn=document.getElementById('cnl');if(cn)cn.innerHTML=nl(Object.assign({},cases[st.expanded].nlc));}
+  }
+  window.expC=function(i){st.expanded=i;r();};r();
+}
+
+function s11(el){
+  var qs=[{e:'5 &times; 3',s:'+',v:15,c:1},{e:'(&#8722;3) &times; 8',s:'&#8722;',v:24,c:2},{e:'(&#8722;4) &times; (&#8722;6)',s:'+',v:24,c:3},{e:'7 &times; (&#8722;2)',s:'&#8722;',v:14,c:2},{e:'(&#8722;9) &times; (&#8722;3)',s:'+',v:27,c:3}];
+  var qsRaw=[{s:'+',v:15},{s:'−',v:24},{s:'+',v:24},{s:'−',v:14},{s:'+',v:27}];
+  var st=ST.s11;if(!st.results)st.results=[];
+  function r(){
+    if(st.done){
+      var rh=qs.map(function(q,i){return '<div class="card" style="margin-bottom:6px;display:flex;align-items:center;gap:9px;"><div style="font-size:18px;">'+(st.results[i]?'&#9989;':'&#10060;')+'</div><div><div style="font-weight:800;font-size:13px;">'+q.e+'</div><div style="font-size:11px;color:var(--mu);">= '+q.s+q.v+' | Case '+q.c+'</div></div></div>';}).join('');
+      el.innerHTML=navH('Mixed Practice','S11 &middot; Mixed')+pbH(11,13)+
+        '<div class="scroll"><div style="font-size:15px;font-weight:900;margin-bottom:9px;">Results! &#127881;</div>'+rh+
+          (st.results.every(function(rr){return rr;})?'<div class="proof">PERFECT SCORE! Arjun ne kiya! &#127942;</div>':'')+
+          '<div style="height:70px"></div></div>'+
+        '<div class="bbar"><button class="btn btnp" onclick="NAV(11)">Continue &#8594; Game! &#127918;</button></div>';
+      return;
+    }
+    var q=qs[st.curQ],qr=qsRaw[st.curQ];
+    var step2=st.signCorrect?
+      '<div><div class="scl" style="margin-top:9px;">Step 2 &#8212; What is the VALUE?</div><div style="display:flex;gap:7px;margin-top:5px;"><input type="number" id="vi" class="inp" style="flex:1;" placeholder="(no sign)"><button class="btn btnp" style="width:auto;padding:10px 12px;" onclick="ckV11()">Check</button></div>'+(st.valHint?'<div class="hc">&#128161; '+st.valHint+'</div>':'')+'</div>':'';
+    el.innerHTML=navH('Mixed Practice','S11 &middot; Mixed')+pbH(11,13)+
+      '<div class="scroll"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><div style="font-size:15px;font-weight:900;">Mixed Practice</div><div class="sbdg">Q '+(st.curQ+1)+'/5</div></div>'+
+        '<div class="pb2"><div class="pb2f" style="width:'+(st.curQ/qs.length*100).toFixed(0)+'%"></div></div>'+
+        '<div class="card" style="text-align:center;margin:10px 0;padding:20px;"><div style="font-size:10px;font-weight:800;letter-spacing:1px;color:var(--mu);margin-bottom:7px;">FIND THE ANSWER</div><div style="font-size:32px;font-weight:900;color:var(--dk);">'+q.e+'</div></div>'+
+        '<div><div class="scl">Step 1 &#8212; What is the SIGN?</div><div class="sgg"><button class="sgb sgp'+(st.signPicked==='+'?' ch':'')+'" onclick="pkS11(\'+\')">+ Positive</button><button class="sgb sgn'+(st.signPicked==='&#8722;'?' chn':'')+'" onclick="pkS11(\'&#8722;\')">&#8722; Negative</button></div></div>'+
+        step2+(st.hintMsg?'<div class="rlc rla"><div class="ri">&#128161;</div><div>'+st.hintMsg+'</div></div>':'')+
+        '<div class="card bl" style="margin-top:7px;"><div style="font-size:11px;font-weight:700;color:var(--b);">Ria: Always check signs FIRST. Same &#8594; +, Different &#8594; &#8722;</div></div>'+
+        '<div style="height:70px"></div></div><div class="bbar"></div>';
+  }
+  window.pkS11=function(s){var qr=qsRaw[st.curQ];st.signPicked=s;var correct=(s==='+'&&qr.s==='+')||(s==='&#8722;'&&qr.s==='−');if(correct){st.signCorrect=true;st.hintMsg='';toast('Sign correct! &#10003; Now the value.','g');}else{st.signCorrect=false;st.hintMsg='Mini reminder: Same signs&#8594;(+) | Different signs&#8594;(&#8722;)';toast('Check signs again!','r');}r();};
+  window.ckV11=function(){var qr=qsRaw[st.curQ];var v=parseInt((document.getElementById('vi')||{}).value||'');if(v===qr.v){st.results[st.curQ]=true;toast('Correct! &#10003; &#11088;','g');st.curQ++;st.signPicked=null;st.signCorrect=null;st.valHint='';st.hintMsg='';st.valAtt=0;if(st.curQ>=qs.length){st.done=true;setTimeout(function(){confetti(el);},200);}}else{st.valAtt++;var h=['Just multiply the numbers &#8212; ignore sign.','Hint: check the case card.','Answer is '+qr.v];st.valHint=h[Math.min(st.valAtt-1,2)];if(st.valAtt>=3){st.results[st.curQ]=false;st.curQ++;st.signPicked=null;st.signCorrect=null;st.valHint='';st.hintMsg='';st.valAtt=0;if(st.curQ>=qs.length)st.done=true;toast('Answer was '+qr.s+qr.v,'r');}}r();};
+  r();
+}
+
+function s12(el){
+  var allE=[{e:'(&#8722;3)&times;(&#8722;5)',s:'+'},{e:'4&times;7',s:'+'},{e:'(&#8722;2)&times;8',s:'&#8722;'},{e:'(&#8722;1)&times;(&#8722;9)',s:'+'},{e:'6&times;(&#8722;3)',s:'&#8722;'},{e:'(&#8722;5)&times;(&#8722;4)',s:'+'},{e:'9&times;3',s:'+'},{e:'(&#8722;2)&times;(&#8722;2)',s:'+'},{e:'5&times;(&#8722;6)',s:'&#8722;'},{e:'(&#8722;7)&times;(&#8722;1)',s:'+'},{e:'3&times;(&#8722;4)',s:'&#8722;'},{e:'(&#8722;8)&times;2',s:'&#8722;'}];
+  var score=ST.s12.score||0,round=ST.s12.round||1,sel=null,falling=[],wc=0,tid=null,aid=null;
+  function getRound(r){return allE.slice(0,[5,8,12][r-1]).sort(function(){return Math.random()-.5;});}
+  function showIntro(){
+    el.innerHTML=navH('Sign Sorter Game','S12 &middot; Game')+pbH(12,13)+
+      '<div class="gz" style="align-items:center;justify-content:center;padding:20px;text-align:center;">'+
+        '<div style="font-size:36px;margin-bottom:10px;">&#127919;</div>'+
+        '<div style="font-size:18px;font-weight:900;color:#fff;margin-bottom:7px;">Sign Sorter Game!</div>'+
+        '<div style="font-size:12px;color:rgba(255,255,255,.7);margin-bottom:16px;">Tap expression, then tap the correct bin!<br>Round '+round+'/3 &#8212; '+[5,8,12][round-1]+' expressions</div>'+
+        '<div style="font-size:22px;font-weight:900;color:var(--go);margin-bottom:14px;">Score: '+score+'</div>'+
+        '<button class="btn" style="background:var(--go);color:#1a1a2e;padding:14px 28px;font-size:15px;font-weight:900;border-radius:18px;" onclick="startGR()">'+(round===1?'Start Game! &#128640;':'Round '+round+' &#8212; Go! &#128640;')+'</button>'+
+      '</div>';
+  }
+  function buildUI(){
+    el.innerHTML=navH('Sign Sorter Game','S12 &middot; Game')+pbH(12,13)+
+      '<div class="gz">'+
+        '<div class="mb"><div style="color:var(--go);font-size:13px;font-weight:900;">Round '+round+'/3</div><div style="color:rgba(255,255,255,.9);font-size:13px;font-weight:900;">Score: <span id="gsc">'+score+'</span></div><div style="color:#EF5350;font-size:13px;font-weight:900;">&#9201; <span id="gtt">30</span>s</div></div>'+
+        '<div class="tbar"><div class="tbf" id="tbf" style="width:100%"></div></div>'+
+        '<div id="gcvs" style="flex:1;position:relative;overflow:hidden;"></div>'+
+        '<div class="gbins"><div class="gbin pos" onclick="sortB(\'+\')"><div class="gbs">+</div><div class="gbl">Positive</div></div><div class="gbin neg" onclick="sortB(\'&#8722;\')"><div class="gbs">&#8722;</div><div class="gbl">Negative</div></div></div>'+
+      '</div>';
+  }
+  window.startGR=function(){
+    falling=getRound(round).map(function(ex,i){return {e:ex.e,s:ex.s,id:i,x:Math.random()*220+10,y:-50-i*65,dy:.6+(round-1)*.35,sel:false,gone:false};});
+    sel=null;wc=0;buildUI();
+    var timer=30;
+    tid=setInterval(function(){
+      timer-=.1;
+      var tf=document.getElementById('tbf'),tt=document.getElementById('gtt');
+      if(tf)tf.style.width=Math.max(0,timer/30*100)+'%';
+      if(tt)tt.textContent=Math.max(0,Math.ceil(timer))+'s';
+      if(timer<=0||falling.filter(function(f){return!f.gone;}).length===0){clearInterval(tid);if(aid)cancelAnimationFrame(aid);endR();}
+    },100);
+    function aloop(){
+      var cvs=document.getElementById('gcvs');if(!cvs){cancelAnimationFrame(aid);return;}
+      falling.forEach(function(f){if(!f.gone)f.y+=f.dy;});
+      falling=falling.filter(function(f){if(f.y>400)f.gone=true;return!f.gone;});
+      var h='';falling.forEach(function(f){h+='<div class="fe'+(f.sel?' sel':'')+'" style="left:'+f.x+'px;top:'+f.y+'px;" onclick="selE('+f.id+')">'+f.e+'</div>';});
+      cvs.innerHTML=h;
+      var gs=document.getElementById('gsc');if(gs)gs.textContent=score;
+      aid=requestAnimationFrame(aloop);
+    }
+    aid=requestAnimationFrame(aloop);
+  };
+  window.selE=function(id){falling.forEach(function(f){f.sel=(f.id===id);});sel=id;};
+  window.sortB=function(bin){
+    if(sel===null){toast('Tap expression first!','r',1000);return;}
+    var f=null;for(var i=0;i<falling.length;i++){if(falling[i].id===sel){f=falling[i];break;}}
+    if(!f)return;
+    if(f.s===bin){score+=10;f.gone=true;sel=null;wc=0;ST.s12.score=score;}
+    else{score=Math.max(0,score-5);ST.s12.score=score;wc++;falling.forEach(function(f2){f2.sel=false;});sel=null;
+      if(wc>=3){clearInterval(tid);if(aid)cancelAnimationFrame(aid);
+        var cvs=document.getElementById('gcvs');
+        if(cvs)cvs.innerHTML='<div style="padding:20px;text-align:center;color:#fff;font-size:13px;font-weight:700;">&#9208; Quick Reminder:<br><strong style="color:var(--go);">Same signs&#8594;(+)<br>Different signs&#8594;(&#8722;)</strong><br><button class="btn" style="margin-top:10px;background:var(--go);color:#1a1a2e;padding:9px 22px;border-radius:12px;font-weight:800;" onclick="resumeGR()">Resume</button></div>';
+      }
+    }
+  };
+  window.resumeGR=function(){wc=0;buildUI();var t2=30;tid=setInterval(function(){t2-=.1;var tf=document.getElementById('tbf'),tt=document.getElementById('gtt');if(!tt){clearInterval(tid);return;}if(tf)tf.style.width=Math.max(0,t2/30*100)+'%';tt.textContent=Math.max(0,Math.ceil(t2))+'s';if(t2<=0||falling.filter(function(f){return!f.gone;}).length===0){clearInterval(tid);endR();}},100);aid=requestAnimationFrame(function al(){var c=document.getElementById('gcvs');if(!c){cancelAnimationFrame(aid);return;}falling.forEach(function(f){if(!f.gone)f.y+=f.dy;});falling=falling.filter(function(f){if(f.y>400)f.gone=true;return!f.gone;});var h='';falling.forEach(function(f){h+='<div class="fe'+(f.sel?' sel':'')+'" style="left:'+f.x+'px;top:'+f.y+'px;" onclick="selE('+f.id+')">'+f.e+'</div>';});c.innerHTML=h;var gs=document.getElementById('gsc');if(gs)gs.textContent=score;aid=requestAnimationFrame(al);});};
+  function endR(){
+    clearInterval(tid);if(aid)cancelAnimationFrame(aid);
+    if(round<3){round++;ST.s12.round=round;showIntro();}
+    else{var stars=score>=80?3:score>=40?2:1;
+      el.innerHTML=navH('Sign Sorter Game','S12 &middot; Game')+pbH(12,13)+
+        '<div class="gz" style="align-items:center;justify-content:center;padding:20px;text-align:center;">'+
+          '<div class="str">'+'&#11088;'.repeat(stars)+'</div>'+
+          '<div style="font-size:18px;font-weight:900;color:#fff;margin-bottom:6px;">'+(stars===3?'Expert level! &#127942;':'Great effort! Keep going!')+'</div>'+
+          '<div style="font-size:24px;font-weight:900;color:var(--go);margin-bottom:14px;">Final Score: '+score+'</div>'+
+          '<button class="btn btnp" style="margin-top:10px;margin-bottom:8px;" onclick="NAV(12)">Continue &#8594; Summary &#8594;</button>'+
+          '<button class="btn btns" style="width:100%;color:#fff;border-color:rgba(255,255,255,.3);" onclick="rG()">Play Again &#128260;</button>'+
+        '</div>';
+      if(stars===3)setTimeout(function(){confetti(el);},300);
+    }
+  }
+  window.rG=function(){score=0;round=1;ST.s12.score=0;ST.s12.round=1;showIntro();};
+  showIntro();
+}
+
+function s13(el){
+  var sps=[
+    {ic:'&#127810;',col:'var(--g)',bg:'var(--gx)',t:'Stop 1 &#8212; Recall',s:'Multiplication = Repeated Addition | a&times;b = b added a times',n:1},
+    {ic:'&#128203;',col:'var(--c)',bg:'var(--cx)',t:'Stop 2 &#8212; Three Cases',s:'(+)&times;(+)=(+) | (+)&times;(&#8722;)=(&#8722;) | (&#8722;)&times;(&#8722;)=(+)',n:9},
+    {ic:'&#11088;',col:'var(--a)',bg:'var(--ax)',t:'Stop 3 &#8212; The One Rule',s:'Same signs &#8594; (+) | Different signs &#8594; (&#8722;)',n:9},
+  ];
+  el.innerHTML=navH('Summary &amp; Conclusion','S13 &middot; Closure')+pbH(13,13)+
+    '<div class="scroll">'+
+      '<div class="card" style="background:linear-gradient(135deg,var(--gx),var(--gox));border:none;text-align:center;padding:18px;margin-bottom:10px;"><div style="font-size:32px;margin-bottom:5px;">&#127881;</div><div style="font-size:17px;font-weight:900;color:var(--dk);">Well done, Arjun!</div><div style="font-size:12px;color:var(--mu);">You solved the mystery of integer multiplication!</div></div>'+
+      '<div class="char-row">'+
+        '<div class="char"><div class="cb ria" style="animation:bnce 1s .2s ease;">&#128522;</div><div class="cl">Ria</div></div>'+
+        '<div style="font-size:22px;">&#129309;</div>'+
+        '<div class="char"><div class="cb arjun" style="animation:bnce 1s .4s ease;">&#128512;</div><div class="cl">Arjun</div></div>'+
+      '</div>'+
+      '<div class="card bl" style="margin:9px 0;"><div style="font-size:12px;font-weight:700;color:var(--b);">Arjun: &ldquo;Multiplication is repeated addition. For integers, I check signs first using The One Rule!&rdquo;</div><div class="vo">"Arjun: Ria, ab bilkul samajh aaya! Same signs &#8594; positive, alag signs &#8594; negative!"</div></div>'+
+      '<div style="font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:6px;">Your Learning Journey</div>'+
+      sps.map(function(sp){return '<div class="sp" style="background:'+sp.bg+';border:1.5px solid '+sp.col+';" onclick="NAV('+sp.n+')"><div style="font-size:24px;">'+sp.ic+'</div><div style="flex:1;"><div style="font-size:12px;font-weight:800;color:'+sp.col+';">'+sp.t+'</div><div style="font-size:11px;font-weight:600;color:var(--md);">'+sp.s+'</div></div><div style="font-size:14px;color:var(--mu);">&#8250;</div></div>';}).join('')+
+      '<div class="bigrl"><div style="font-size:10px;font-weight:900;letter-spacing:1.5px;color:var(--a);margin-bottom:5px;">THE ONE RULE &#8212; ALWAYS REMEMBER</div><div style="color:var(--gd);">&#128994; Same signs &#8594; <strong>Positive (+)</strong></div><div style="color:var(--c);">&#128308; Different signs &#8594; <strong>Negative (&#8722;)</strong></div></div>'+
+      '<div class="card" style="text-align:center;margin-top:8px;"><div style="font-size:12px;font-weight:700;margin-bottom:7px;">Ready for more practice?</div><div style="font-size:10px;color:var(--mu);margin-bottom:10px;">NCERT Class VII, Ch.1 &#8212; Integers, Ex 1.3</div><button class="btn btnp" onclick="toast(\'Opening NCERT Exercise 1.3! &#128216;\',\'g\',2500);confetti(document.getElementById(\'scr\'));">Try NCERT Exercise 1.3 &#8594;</button></div>'+
+      '<button class="btn btns" style="width:100%;margin-top:8px;" onclick="NAV(0)">&#8592; Restart from Beginning</button>'+
+      '<div style="height:70px"></div>'+
+    '</div>';
+  setTimeout(function(){confetti(el);},500);setTimeout(function(){confetti(el);},900);
+  window.confetti=confetti;
+}
+
+render();
+})();
 </script>
-
 </body>
 </html>
