@@ -335,33 +335,36 @@ function s2(el){
 /* ─── S3: RECALL PRACTICE ────────────────────────── */
 function s3(el){
   var st=ST.s3;
-  var mL=['2&times;6','4&times;2','3&times;5'];
-  // Correct mapping: index i of mL maps to which index of mR is correct
-  // mL[0]=2x6 → 6+6(idx0), mL[1]=4x2 → 2+2+2+2(idx1), mL[2]=3x5 → 5+5+5(idx2)
-  var mRItems=['6+6','2+2+2+2','5+5+5'];
-  // Shuffled right column (fixed shuffle per session)
-  if(!st.shuffledR){
-    var shuf=mRItems.slice();
-    // shuffle using Fisher-Yates
-    for(var si=shuf.length-1;si>0;si--){
-      var sj=Math.floor(Math.random()*(si+1));
-      var tmp=shuf[si];shuf[si]=shuf[sj];shuf[sj]=tmp;
-    }
-    // Ensure it's actually shuffled (not identity)
-    var same=true;
-    for(var k=0;k<shuf.length;k++){if(shuf[k]!==mRItems[k]){same=false;break;}}
-    if(same){var t2=shuf[0];shuf[0]=shuf[1];shuf[1]=t2;}
-    st.shuffledR=shuf;
-  }
-  var mR=st.shuffledR;
-  // correctRight[i] = index in mR that is correct for mL[i]
-  var correctRight=[];
-  for(var ci=0;ci<mL.length;ci++){
-    for(var ri=0;ri<mR.length;ri++){
-      if(mR[ri]===mRItems[ci]){correctRight[ci]=ri;break;}
-    }
-  }
+  // Left expressions and their canonical correct right-column answers (plain text for comparison)
+  var mLdisp=['2&times;6','4&times;2','3&times;5'];
+  var mLkey =['2x6',    '4x2',    '3x5'];
+  // Correct answer content for each left item (plain text key + display string)
+  var correctForLeft={
+    '2x6':  {key:'6+6',       disp:'6+6'},
+    '4x2':  {key:'2+2+2+2',   disp:'2+2+2+2'},
+    '3x5':  {key:'5+5+5',     disp:'5+5+5'}
+  };
 
+  // Build shuffled right column once per session and store in state
+  if(!st.shuffledR){
+    var rightItems=[
+      {key:'6+6',     disp:'6+6'},
+      {key:'2+2+2+2', disp:'2+2+2+2'},
+      {key:'5+5+5',   disp:'5+5+5'}
+    ];
+    // Fisher-Yates shuffle
+    for(var si=rightItems.length-1;si>0;si--){
+      var sj=Math.floor(Math.random()*(si+1));
+      var tmp=rightItems[si];rightItems[si]=rightItems[sj];rightItems[sj]=tmp;
+    }
+    // Guarantee it is not the identity permutation
+    var isIdentity=(rightItems[0].key==='6+6'&&rightItems[1].key==='2+2+2+2'&&rightItems[2].key==='5+5+5');
+    if(isIdentity){var t2=rightItems[0];rightItems[0]=rightItems[1];rightItems[1]=t2;}
+    st.shuffledR=rightItems;
+  }
+  var mR=st.shuffledR; // array of {key, disp} in shuffled order
+
+  // q2Done tracks completed left indices: st.q2Done[leftIdx] = true
   function r(){
     var q1h=st.q1Done?
       '<div class="inp ok">15 &#10003;</div><div class="mnl" id="nlm"></div>':
@@ -370,14 +373,30 @@ function s3(el){
         '<button class="btn btnp" style="width:auto;padding:10px 14px;" onclick="chk1()">Check</button>'+
       '</div>'+(st.q1Hint?'<div class="hc">&#128161; '+st.q1Hint+'</div>':'');
 
-    var mrh=mL.map(function(l,i){
-      var done=!!st.q2Done[i];
-      return '<div class="mrow">'+
-        '<div class="mit'+(st.selLeft===i&&!done?' sel':'')+(done?' ok':'')+(st.wL===i?' bad':'')+'" onclick="sL3('+i+')">'+l+'</div>'+
-        '<div style="font-size:14px;text-align:center;">'+(done?'&#9989;':'&#8594;')+'</div>'+
-        '<div class="mit'+(done?' ok':'')+(st.wR===i?' bad':'')+'" onclick="sR3('+i+')">'+mR[i]+'</div>'+
+    // Build the 3 rows: left column fixed order, right column shuffled
+    // Track which right-column keys have already been correctly matched
+    var matchedRightKeys={};
+    for(var li=0;li<mLkey.length;li++){
+      if(st.q2Done[li]) matchedRightKeys[correctForLeft[mLkey[li]].key]=true;
+    }
+
+    var mrh='';
+    for(var ri=0;ri<3;ri++){
+      var leftIdx=ri;
+      var leftDone=!!st.q2Done[leftIdx];
+      var rightItem=mR[ri];
+      var rightMatched=!!matchedRightKeys[rightItem.key];
+      // Is this right cell the one currently selected left's correct answer?
+      var isSelTarget=(st.selLeft!==null&&st.selLeft!==undefined&&!leftDone&&
+                       correctForLeft[mLkey[st.selLeft]]&&
+                       correctForLeft[mLkey[st.selLeft]].key===rightItem.key);
+      var rightCls='mit'+(rightMatched?' ok':'')+(st.wRidx===ri?' bad':'');
+      mrh+='<div class="mrow">'+
+        '<div class="mit'+(st.selLeft===leftIdx&&!leftDone?' sel':'')+(leftDone?' ok':'')+(st.wLidx===leftIdx?' bad':'')+'" onclick="sL3('+leftIdx+')">'+mLdisp[leftIdx]+'</div>'+
+        '<div style="font-size:14px;text-align:center;">'+(leftDone?'&#9989;':'&#8594;')+'</div>'+
+        '<div class="'+rightCls+'" onclick="sR3('+ri+')" style="'+(rightMatched?'pointer-events:none;':'')+'">'+rightItem.disp+'</div>'+
       '</div>';
-    }).join('');
+    }
 
     el.innerHTML=navH('Quick Practice','S3 &middot; Practice')+pbH(3,13)+
       '<div class="scroll">'+
@@ -420,22 +439,44 @@ function s3(el){
       r();
     }
   };
-  window.sL3=function(i){if(st.q2Done[i])return;st.selLeft=i;r();};
-  window.sR3=function(rv){
-    if(st.selLeft===null||st.selLeft===undefined)return;
-    var i=st.selLeft;
-    if(correctRight[i]===rv){
-      st.q2Done[i]=true;st.selLeft=null;st.wL=null;st.wR=null;
-      if(Object.keys(st.q2Done).length===3){
-        st.stars=2;toast('All matched! &#127881;','g');
-        setTimeout(function(){confetti(el);},200);
-      } else toast('Correct match! &#9989;','g');
-    } else {
-      st.wL=i;st.wR=rv;st.selLeft=null;
-      toast('Try again! How many times is it being added?','r');
-      setTimeout(function(){st.wL=null;st.wR=null;r();},500);
-    }
+
+  window.sL3=function(leftIdx){
+    if(st.q2Done[leftIdx])return;
+    st.selLeft=leftIdx;
+    st.wLidx=null;st.wRidx=null;
     r();
+  };
+
+  window.sR3=function(rightRowIdx){
+    // rightRowIdx = position (0,1,2) in the shuffled right column
+    if(st.selLeft===null||st.selLeft===undefined)return;
+    var leftIdx=st.selLeft;
+    var leftKey=mLkey[leftIdx];
+    var correctKey=correctForLeft[leftKey].key;
+    var clickedKey=mR[rightRowIdx].key;
+
+    if(correctKey===clickedKey){
+      // Correct match
+      st.q2Done[leftIdx]=true;
+      st.selLeft=null;st.wLidx=null;st.wRidx=null;
+      var doneCount=0;
+      for(var k=0;k<mLkey.length;k++){if(st.q2Done[k])doneCount++;}
+      if(doneCount===3){
+        st.stars=2;
+        toast('All matched! &#127881;','g');
+        setTimeout(function(){confetti(el);},200);
+      } else {
+        toast('Correct match! &#9989;','g');
+      }
+      r();
+    } else {
+      // Wrong match — flash both cells, then clear
+      st.wLidx=leftIdx;st.wRidx=rightRowIdx;
+      st.selLeft=null;
+      toast('Try again! How many times is it being added?','r');
+      r();
+      setTimeout(function(){st.wLidx=null;st.wRidx=null;r();},500);
+    }
   };
   r();
 }
@@ -973,8 +1014,11 @@ function s12(el){
     {e:'(&#8722;7)&times;(&#8722;1)',s:'+'},{e:'3&times;(&#8722;4)',s:'-'},{e:'(&#8722;8)&times;2',s:'-'}
   ];
   var score=ST.s12.score||0, round=ST.s12.round||1;
-  var sel=null, falling=[], wc=0;
+  // sel stores the stable UID string of the selected expression
+  var sel=null, falling=[], wc=0, uidCounter=0;
   window._gameTid=null; window._gameAid=null;
+
+  function makeUID(){uidCounter++;return 'fe'+uidCounter;}
 
   function getRound(rnd){
     var slice=allE.slice(0,[5,8,12][rnd-1]);
@@ -986,7 +1030,7 @@ function s12(el){
       '<div class="gz" style="align-items:center;justify-content:center;padding:20px;text-align:center;">'+
         '<div style="font-size:36px;margin-bottom:10px;">&#127919;</div>'+
         '<div style="font-size:18px;font-weight:900;color:#fff;margin-bottom:7px;">Sign Sorter Game!</div>'+
-        '<div style="font-size:12px;color:rgba(255,255,255,.7);margin-bottom:16px;">Tap expression, then tap the correct bin!<br>Round '+round+'/3 &#8212; '+[5,8,12][round-1]+' expressions</div>'+
+        '<div style="font-size:12px;color:rgba(255,255,255,.7);margin-bottom:16px;">Tap an expression to select it, then tap the correct bin!<br>Round '+round+'/3 &#8212; '+[5,8,12][round-1]+' expressions</div>'+
         '<div style="font-size:22px;font-weight:900;color:var(--go);margin-bottom:14px;">Score: '+score+'</div>'+
         '<button class="btn" style="background:var(--go);color:#1a1a2e;padding:14px 28px;font-size:15px;font-weight:900;border-radius:18px;" onclick="startGR()">'+(round===1?'Start Game! &#128640;':'Round '+round+' &#8212; Go! &#128640;')+'</button>'+
       '</div>';
@@ -1001,17 +1045,83 @@ function s12(el){
           '<div style="color:#EF5350;font-size:13px;font-weight:900;">&#9201; <span id="gtt">30</span>s</div>'+
         '</div>'+
         '<div class="tbar"><div class="tbf" id="tbf" style="width:100%"></div></div>'+
+        // The canvas is a stable div — we will manage child divs via JS, not innerHTML
         '<div id="gcvs" style="flex:1;position:relative;overflow:hidden;"></div>'+
         '<div class="gbins">'+
           '<div class="gbin pos" onclick="sortB(\'+\')"><div class="gbs">+</div><div class="gbl">Positive</div></div>'+
           '<div class="gbin neg" onclick="sortB(\'-\')"><div class="gbs">&#8722;</div><div class="gbl">Negative</div></div>'+
         '</div>'+
       '</div>';
+
+    // Attach a single delegated click listener on the canvas — survives all DOM updates
+    var cvs=document.getElementById('gcvs');
+    if(cvs){
+      cvs.addEventListener('click',function(ev){
+        var target=ev.target;
+        // Walk up to find a .fe element
+        while(target&&target!==cvs){
+          if(target.classList&&target.classList.contains('fe')){
+            var uid=target.getAttribute('data-uid');
+            if(uid) selE(uid);
+            return;
+          }
+          target=target.parentNode;
+        }
+      });
+    }
+  }
+
+  // Update positions and repaint using individual DOM element moves (no innerHTML wipe)
+  function repaint(){
+    var cvs=document.getElementById('gcvs');
+    if(!cvs)return;
+
+    // Build a map of existing DOM elements by uid
+    var existingEls={};
+    var children=cvs.children;
+    for(var ci=0;ci<children.length;ci++){
+      var uid=children[ci].getAttribute('data-uid');
+      if(uid)existingEls[uid]=children[ci];
+    }
+
+    // Remove elements that are gone
+    for(var uid2 in existingEls){
+      if(Object.prototype.hasOwnProperty.call(existingEls,uid2)){
+        var found=false;
+        for(var fi=0;fi<falling.length;fi++){
+          if(falling[fi].uid===uid2){found=true;break;}
+        }
+        if(!found)cvs.removeChild(existingEls[uid2]);
+      }
+    }
+
+    // Update or create elements for each falling item
+    for(var fi2=0;fi2<falling.length;fi2++){
+      var f=falling[fi2];
+      var domEl=existingEls[f.uid];
+      if(!domEl){
+        // Create new element
+        domEl=document.createElement('div');
+        domEl.className='fe';
+        domEl.setAttribute('data-uid',f.uid);
+        domEl.innerHTML=f.e;
+        cvs.appendChild(domEl);
+      }
+      // Update position and selected state
+      domEl.style.left=f.x+'px';
+      domEl.style.top=f.y+'px';
+      if(f.sel){
+        if(!domEl.classList.contains('sel'))domEl.classList.add('sel');
+      } else {
+        if(domEl.classList.contains('sel'))domEl.classList.remove('sel');
+      }
+    }
   }
 
   window.startGR=function(){
+    // Reduced speed: dy = 0.25 base, +0.12 per round
     falling=getRound(round).map(function(ex,i){
-      return {e:ex.e,s:ex.s,id:i,x:Math.random()*220+10,y:-50-i*65,dy:.6+(round-1)*.35,sel:false,gone:false};
+      return {e:ex.e,s:ex.s,uid:makeUID(),x:Math.random()*210+10,y:-50-i*80,dy:0.25+(round-1)*0.12,sel:false,gone:false};
     });
     sel=null;wc=0;
     buildUI();
@@ -1022,43 +1132,68 @@ function s12(el){
       if(tf)tf.style.width=Math.max(0,timer/30*100)+'%';
       if(tt)tt.textContent=Math.max(0,Math.ceil(timer))+'s';
       if(timer<=0){clearInterval(window._gameTid);window._gameTid=null;cancelAnimationFrame(window._gameAid);window._gameAid=null;endR();return;}
-      if(falling.filter(function(f){return!f.gone;}).length===0){clearInterval(window._gameTid);window._gameTid=null;cancelAnimationFrame(window._gameAid);window._gameAid=null;endR();}
+      var activeCount=0;
+      for(var fi=0;fi<falling.length;fi++){if(!falling[fi].gone)activeCount++;}
+      if(activeCount===0){clearInterval(window._gameTid);window._gameTid=null;cancelAnimationFrame(window._gameAid);window._gameAid=null;endR();}
     },100);
+
     function aloop(){
       var cvs=document.getElementById('gcvs');
       if(!cvs){cancelAnimationFrame(window._gameAid);window._gameAid=null;return;}
-      for(var fi=0;fi<falling.length;fi++){if(!falling[fi].gone)falling[fi].y+=falling[fi].dy;}
-      falling=falling.filter(function(f){if(f.y>400)f.gone=true;return!f.gone;});
-      var h='';
-      for(var fi2=0;fi2<falling.length;fi2++){
-        var f2=falling[fi2];
-        h+='<div class="fe'+(f2.sel?' sel':'')+'" style="left:'+f2.x+'px;top:'+f2.y+'px;" onclick="selE('+f2.id+')">'+f2.e+'</div>';
+      // Move each falling item
+      for(var fi=0;fi<falling.length;fi++){
+        if(!falling[fi].gone)falling[fi].y+=falling[fi].dy;
+        if(falling[fi].y>420)falling[fi].gone=true;
       }
-      cvs.innerHTML=h;
+      // Remove gone items from array
+      falling=falling.filter(function(f){return!f.gone;});
+      // Update score display
       var gs=document.getElementById('gsc');if(gs)gs.textContent=score;
+      // Repaint using DOM moves (no innerHTML wipe — preserves event listeners on canvas)
+      repaint();
       window._gameAid=requestAnimationFrame(aloop);
     }
     window._gameAid=requestAnimationFrame(aloop);
   };
 
-  window.selE=function(id){for(var fi=0;fi<falling.length;fi++)falling[fi].sel=(falling[fi].id===id);sel=id;};
+  // selE is called by the delegated listener — receives the stable uid string
+  function selE(uid){
+    for(var fi=0;fi<falling.length;fi++){
+      falling[fi].sel=(falling[fi].uid===uid);
+    }
+    sel=uid;
+  }
+  window.selE=selE; // expose for any legacy inline use
 
   window.sortB=function(bin){
-    if(sel===null){toast('Tap expression first!','r',1000);return;}
+    if(sel===null){toast('Tap an expression first!','r',1000);return;}
     var f=null;
-    for(var fi=0;fi<falling.length;fi++){if(falling[fi].id===sel){f=falling[fi];break;}}
-    if(!f)return;
+    for(var fi=0;fi<falling.length;fi++){
+      if(falling[fi].uid===sel){f=falling[fi];break;}
+    }
+    if(!f){sel=null;return;}
     if(f.s===bin){
       score+=10;f.gone=true;sel=null;wc=0;ST.s12.score=score;
+      var gs=document.getElementById('gsc');if(gs)gs.textContent=score;
+      // Remove the matched DOM element immediately
+      var cvs=document.getElementById('gcvs');
+      if(cvs){
+        var ch=cvs.children;
+        for(var ci=0;ci<ch.length;ci++){
+          if(ch[ci].getAttribute('data-uid')===f.uid){cvs.removeChild(ch[ci]);break;}
+        }
+      }
     } else {
       score=Math.max(0,score-5);ST.s12.score=score;wc++;
+      var gs2=document.getElementById('gsc');if(gs2)gs2.textContent=score;
+      // Deselect all
       for(var fi2=0;fi2<falling.length;fi2++)falling[fi2].sel=false;
       sel=null;
       if(wc>=3){
         clearInterval(window._gameTid);window._gameTid=null;
         cancelAnimationFrame(window._gameAid);window._gameAid=null;
-        var cvs=document.getElementById('gcvs');
-        if(cvs)cvs.innerHTML='<div style="padding:20px;text-align:center;color:#fff;font-size:13px;font-weight:700;">&#9208; Quick Reminder:<br><strong style="color:var(--go);">Same signs&#8594;(+)<br>Different signs&#8594;(&#8722;)</strong><br><button class="btn" style="margin-top:10px;background:var(--go);color:#1a1a2e;padding:9px 22px;border-radius:12px;font-weight:800;" onclick="resumeGR()">Resume</button></div>';
+        var cvs2=document.getElementById('gcvs');
+        if(cvs2)cvs2.innerHTML='<div style="padding:20px;text-align:center;color:#fff;font-size:13px;font-weight:700;">&#9208; Quick Reminder:<br><strong style="color:var(--go);">Same signs&#8594;(+)<br>Different signs&#8594;(&#8722;)</strong><br><button class="btn" style="margin-top:10px;background:var(--go);color:#1a1a2e;padding:9px 22px;border-radius:12px;font-weight:800;" onclick="resumeGR()">Resume</button></div>';
       }
     }
   };
@@ -1072,19 +1207,20 @@ function s12(el){
       if(!tt){clearInterval(window._gameTid);return;}
       if(tf)tf.style.width=Math.max(0,t2/30*100)+'%';
       tt.textContent=Math.max(0,Math.ceil(t2))+'s';
-      if(t2<=0||falling.filter(function(f){return!f.gone;}).length===0){
-        clearInterval(window._gameTid);window._gameTid=null;endR();
-      }
+      var activeCount=0;
+      for(var fi=0;fi<falling.length;fi++){if(!falling[fi].gone)activeCount++;}
+      if(t2<=0||activeCount===0){clearInterval(window._gameTid);window._gameTid=null;endR();}
     },100);
     window._gameAid=requestAnimationFrame(function al(){
       var c=document.getElementById('gcvs');
       if(!c){cancelAnimationFrame(window._gameAid);window._gameAid=null;return;}
-      for(var fi=0;fi<falling.length;fi++){if(!falling[fi].gone)falling[fi].y+=falling[fi].dy;}
-      falling=falling.filter(function(f){if(f.y>400)f.gone=true;return!f.gone;});
-      var h='';
-      for(var fi2=0;fi2<falling.length;fi2++){var f2=falling[fi2];h+='<div class="fe'+(f2.sel?' sel':'')+'" style="left:'+f2.x+'px;top:'+f2.y+'px;" onclick="selE('+f2.id+')">'+f2.e+'</div>';}
-      c.innerHTML=h;
+      for(var fi=0;fi<falling.length;fi++){
+        if(!falling[fi].gone)falling[fi].y+=falling[fi].dy;
+        if(falling[fi].y>420)falling[fi].gone=true;
+      }
+      falling=falling.filter(function(f){return!f.gone;});
       var gs=document.getElementById('gsc');if(gs)gs.textContent=score;
+      repaint();
       window._gameAid=requestAnimationFrame(al);
     });
   };
@@ -1115,9 +1251,9 @@ function s12(el){
 /* ─── S13: SUMMARY ───────────────────────────────── */
 function s13(el){
   var sps=[
-    {ic:'&#127810;',col:'var(--g)',bg:'var(--gx)',t:'Stop 1 &#8212; Recall',s:'Multiplication = Repeated Addition | a&times;b = b added a times',n:1},
-    {ic:'&#128203;',col:'var(--c)',bg:'var(--cx)',t:'Stop 2 &#8212; Three Cases',s:'(+)&times;(+)=(+) | (+)&times;(&#8722;)=(&#8722;) | (&#8722;)&times;(&#8722;)=(+)',n:9},
-    {ic:'&#11088;',col:'var(--a)',bg:'var(--ax)',t:'Stop 3 &#8212; The One Rule',s:'Same signs &#8594; (+) | Different signs &#8594; (&#8722;)',n:9}
+    {ic:'&#127810;',col:'var(--g)',bg:'var(--gx)',t:'Step 1 &#8212; Recall',s:'Multiplication = Repeated Addition | a&times;b = b added a times',n:1},
+    {ic:'&#128203;',col:'var(--c)',bg:'var(--cx)',t:'Step 2 &#8212; Three Cases',s:'(+)&times;(+)=(+) | (+)&times;(&#8722;)=(&#8722;) | (&#8722;)&times;(&#8722;)=(+)',n:9},
+    {ic:'&#11088;',col:'var(--a)',bg:'var(--ax)',t:'Step 3 &#8212; The One Rule',s:'Same signs &#8594; (+) | Different signs &#8594; (&#8722;)',n:9}
   ];
   el.innerHTML=navH('Summary &amp; Conclusion','S13 &middot; Closure')+pbH(13,13)+
     '<div class="scroll">'+
@@ -1151,15 +1287,9 @@ function s13(el){
         '<div style="color:var(--gd);">&#128994; Same signs &#8594; <strong>Positive (+)</strong></div>'+
         '<div style="color:var(--c);">&#128308; Different signs &#8594; <strong>Negative (&#8722;)</strong></div>'+
       '</div>'+
-      '<div class="card" style="text-align:center;margin-top:8px;">'+
-        '<div style="font-size:12px;font-weight:700;margin-bottom:7px;">Ready for more practice?</div>'+
-        '<div style="font-size:10px;color:var(--mu);margin-bottom:10px;">NCERT Class VII, Ch.1 &#8212; Integers, Ex 1.3</div>'+
-        '<button class="btn btnp" onclick="showNcert()">Try NCERT Exercise 1.3 &#8594;</button>'+
-      '</div>'+
       '<button class="btn btns" style="width:100%;margin-top:8px;" onclick="NAV(0)">&#8592; Restart from Beginning</button>'+
       '<div style="height:70px"></div>'+
     '</div>';
-  window.showNcert=function(){toast('Opening NCERT Exercise 1.3! &#128216;','g',2500);confetti(el);};
   setTimeout(function(){confetti(el);},500);
   setTimeout(function(){confetti(el);},900);
 }
